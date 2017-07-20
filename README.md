@@ -1,10 +1,11 @@
 # README #
 ### Automation Framework ###
 * A framework for quickly building script-based functionality for common Marketing APIs like Google AdWords or Facebook (so far only Google AdWords is supported).
+* For an introduction to AdWords refer to "AdWords_Introduction.MD"
 * Common goals of such scripts are:
     * clean accounts -> improve data quality
-    * adjust ads -> improve customer experience + raise CTR of our ads
-    * adjust bids -> improve cost efficiency of our accounts
+    * adjust ads -> improve customer experience + raise CTR
+    * adjust bids -> improve cost efficiency of accounts
     * create negative keywords -> reallocate search queries to more suitable keywords and/or block bad traffic
 * Therefore most scripts will
     1. gather custom input
