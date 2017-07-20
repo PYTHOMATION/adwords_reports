@@ -37,7 +37,7 @@ wheels/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit try_campaign_creation.py / coverage reports
+# Unit test / coverage reports
 htmlcov/
 .tox/
 .coverage
@@ -45,7 +45,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-*,cover
+*.cover
 .hypothesis/
 
 # Translations
@@ -91,6 +91,7 @@ ENV/
 
 # Spyder project settings
 .spyderproject
+.spyproject
 
 # Rope project settings
 .ropeproject
@@ -98,3 +99,9 @@ ENV/
 # custom stuff
 .idea
 .DS_Store
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
