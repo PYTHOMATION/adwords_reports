@@ -1,8 +1,7 @@
 import os
 
-from freedan import AdWords
-from freedan import TimeInstance
-from src import base_dir, from_json
+from freedan import AdWords, TimeInstance
+from freedan import base_dir, from_json
 
 
 class Initiator:

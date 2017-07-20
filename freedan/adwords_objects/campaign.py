@@ -1,4 +1,4 @@
-from freedan import DEVICE_TO_ID
+from freedan.adwords_services.adwords import DEVICE_TO_ID
 
 
 class Campaign:

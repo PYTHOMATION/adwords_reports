@@ -2,7 +2,6 @@ import suds
 
 from freedan import AdWordsError
 from freedan import ErrorRetryer
-from src import config_chain
 
 MAX_OPERATIONS_STANDARD_UPLOAD = 5000
 MAX_ATTEMPTS = config_chain["general"]["max_attempts"]

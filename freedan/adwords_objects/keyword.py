@@ -1,5 +1,5 @@
 from freedan import AdWords, KeywordFinalUrl
-from freedan import MAX_WORDS_KEYWORD, MAX_CHARS_KEYWORD
+from freedan.adwords_services.adwords import MAX_WORDS_KEYWORD, MAX_CHARS_KEYWORD
 
 
 class Keyword:

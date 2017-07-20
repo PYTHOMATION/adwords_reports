@@ -12,7 +12,7 @@ from freedan.adwords_objects.negative_keyword import NegativeKeyword
 from freedan.adwords_objects.shared_set_overview import SharedSetOverview
 
 from freedan.adwords_services.adwords import AdWords
-from freedan.adwords_services.adwords_batch_uploader import AdWordsBatchJober
+from freedan.adwords_services.adwords_batch_uploader import AdWordsBatchUploader
 from freedan.adwords_services.adwords_standard_uploader import AdWordsStandardUploader
 from freedan.adwords_services.adwords_error import AdWordsError
 from freedan.adwords_services.adwords_label import AdWordsLabel

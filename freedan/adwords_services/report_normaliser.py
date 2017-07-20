@@ -1,5 +1,4 @@
 import itertools
-
 import pandas as pd
 
 from freedan import AdWords

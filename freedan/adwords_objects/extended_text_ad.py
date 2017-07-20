@@ -1,7 +1,6 @@
-from src.models.adwords import (MAX_CHARS_HEADLINE1, MAX_CHARS_HEADLINE2, MAX_CHARS_DESCRIPTION,
-                                MAX_CHARS_PATH1, MAX_CHARS_PATH2)
-
-from freedan.other_services.text_handler import TextHandler
+from freedan import TextHandler
+from freedan.adwords_services.adwords import (MAX_CHARS_HEADLINE1, MAX_CHARS_HEADLINE2,
+                                              MAX_CHARS_DESCRIPTION, MAX_CHARS_PATH1, MAX_CHARS_PATH2)
 
 
 class ExtendedTextAd:

@@ -4,12 +4,7 @@ import uuid
 
 import pandas as pd
 from googleads import adwords
-from src import base_dir, config_chain, key_paths
-from src.models.account import SearchAccount
-from src.models.adwords_standard_upload import AdWordsStandardUpload
-from src.models.error_retryer import ErrorRetryer
-
-from freedan.adwords_services.adwords_batch_uploader import AdWordsBatchJober
+from freedan import Account, AdWordsStandardUploader, AdWordsBatchUploader, ErrorRetryer
 
 # top level configurations
 API_VERSION = "v201705"
@@ -32,10 +27,11 @@ MAX_CHARS_DESCRIPTION = 80
 MAX_CHARS_PATH1 = 15
 MAX_CHARS_PATH2 = 15
 
+# max and min bid modifiers
 MAX_BID_MODIFIER = 10.0
 MIN_BID_MODIFIER = 0.1
 
-MICRO_FACTOR = 1000000  # one million. AdWords uses micro amounts internally to avoid floating point errors
+MICRO_FACTOR = 1000000  # one million. AdWords uses micro amounts internally
 DEVICE_TO_ID = {  # Internal ids of AdWords for different platforms
     "computers": 30000,
     "mobile": 30001,
@@ -51,17 +47,17 @@ class AdWords:
         - Download reports
         - Upload operations using standard or batch functionality
     """
-    def __init__(self, api_version=API_VERSION, path_credentials=PATH_ADWORDS_CREDENTIALS, report_path=None):
+    def __init__(self, credentials_path, api_version=API_VERSION, report_path=None):
         """
         :param api_version: str, normally you want to use the most recent version
-        :param path_credentials: str, path to .yaml file 
+        :param credentials_path: str, path to .yaml file
         :param report_path: default path used in download_report method
         """
         self.api_version = api_version
-        self.credentials_path = path_credentials
+        self.credentials_path = credentials_path
+        self.report_path = report_path
         self.client = self._init_api_connection()
         self.report_downloader = self.init_service("ReportDownloader")
-        self.report_path = report_path
 
     @staticmethod
     def euro_to_micro(number):
@@ -112,10 +108,9 @@ class AdWords:
         account_dict = self.accounts_by_name(account_selector)
         for account_name in sorted(account_dict.keys()):
             ad_account = account_dict[account_name]
-            if ad_account.name in IGNORED_ACCOUNTS: continue
 
             if convert:
-                search_account = SearchAccount.from_ad_account(ad_account=ad_account)
+                search_account = Account.from_ad_account(ad_account=ad_account)
 
                 self.client.SetClientCustomerId(search_account.id)  # select account
                 yield search_account
@@ -221,7 +216,7 @@ class AdWords:
         """ Upload operations using the AdWords standard upload """
         if service_string is None:
             raise IOError("Please provide the according service of the operations")
-        standard_upload = AdWordsStandardUpload(self)
+        standard_upload = AdWordsStandardUploader(self)
         return standard_upload.upload(service_string, operations, debug, partial_failure, label)
 
     def __batch_upload(self, operations, debug, report_on_results, batch_sleep_interval):
@@ -238,7 +233,7 @@ class AdWords:
             return None
 
         else:
-            batch_job = AdWordsBatchJober(self)
+            batch_job = AdWordsBatchUploader(self)
             batch_job.upload_operation(operations)
 
             # report on partial failures

@@ -1,6 +1,5 @@
 import io
 import os
-
 import apiclient
 import httplib2
 import oauth2client.file
@@ -10,7 +9,6 @@ from googleapiclient.http import MediaIoBaseDownload
 from xlsxwriter.utility import xl_col_to_name
 
 from freedan import ErrorRetryer
-from src import config_chain, key_paths
 
 MAX_ATTEMPTS = config_chain["general"]["max_attempts"]
 SLEEP_INTERVAL = config_chain["general"]["sleep_interval"]
@@ -73,7 +71,7 @@ class Drive:
         :param: spreadsheet_id: id of the spreadsheet
         :return: list of str, containing all work sheet names in the drive 
         """
-        gc = pygsheets.authorize(outh_file=key_paths["drive"])
+        gc = pygsheets.authorize(outh_file=self.credentials_path)
         worksheets = gc.open_by_key(spreadsheet_id).worksheets()
         return [worksheet.title for worksheet in worksheets]
 

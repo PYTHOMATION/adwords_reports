@@ -7,14 +7,14 @@ import pandas as pd
 
 from freedan import AdWordsError
 from freedan import ErrorRetryer
-from src import config_chain
+
 
 PENDING_STATUSES = ('ACTIVE', 'AWAITING_FILE', 'CANCELING')
 MAX_ATTEMPTS = config_chain["general"]["max_attempts"]
 SLEEP_INTERVAL = config_chain["general"]["sleep_interval"]
 
 
-class AdWordsBatchJober:
+class AdWordsBatchUploader:
     """ AdWords service class that handles
         - batch uploads
         - and the related error handling """

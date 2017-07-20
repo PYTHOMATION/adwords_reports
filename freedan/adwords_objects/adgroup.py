@@ -1,4 +1,5 @@
-from freedan import AdWords, DEVICE_TO_ID
+from freedan import AdWords
+from freedan.adwords_services.adwords import DEVICE_TO_ID
 
 
 class AdGroup:
@@ -17,7 +18,6 @@ class AdGroup:
             "operand": {
                 "campaignId": campaign_id,
                 "name": self.name,
-                "id": adgroup_id,
                 "status": status,
                 "biddingStrategyConfiguration": {
                     "bids": [{
@@ -29,6 +29,9 @@ class AdGroup:
                 }
             }
         }
+        if adgroup_id is not None:
+            operation["operand"]["id"] = adgroup_id
+
         if label_id is not None:
             operation["operand"]["labels"] = [{
                 "id": label_id
