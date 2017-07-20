@@ -9,9 +9,10 @@ from googleapiclient.http import MediaIoBaseDownload
 from xlsxwriter.utility import xl_col_to_name
 
 from freedan import ErrorRetryer
+from freedan import config
 
-MAX_ATTEMPTS = config_chain["general"]["max_attempts"]
-SLEEP_INTERVAL = config_chain["general"]["sleep_interval"]
+MAX_ATTEMPTS = config["max_attempts"]
+SLEEP_INTERVAL = config["sleep_interval"]
 
 
 class Drive:

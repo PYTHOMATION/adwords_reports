@@ -5,13 +5,13 @@ from urllib.request import urlopen
 
 import pandas as pd
 
-from freedan import AdWordsError
-from freedan import ErrorRetryer
+from freedan import AdWordsError, ErrorRetryer
+from freedan import config
 
 
 PENDING_STATUSES = ('ACTIVE', 'AWAITING_FILE', 'CANCELING')
-MAX_ATTEMPTS = config_chain["general"]["max_attempts"]
-SLEEP_INTERVAL = config_chain["general"]["sleep_interval"]
+MAX_ATTEMPTS = config["max_attempts"]
+SLEEP_INTERVAL = config["sleep_interval"]
 
 
 class AdWordsBatchUploader:

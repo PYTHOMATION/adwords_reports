@@ -4,17 +4,15 @@ import uuid
 
 import pandas as pd
 from googleads import adwords
+from freedan import config
 from freedan import Account, AdWordsStandardUploader, AdWordsBatchUploader, ErrorRetryer
 
 # top level configurations
 API_VERSION = "v201705"
-PATH_ADWORDS_CREDENTIALS = key_paths["adwords"]
-MAIN_MCC_ID = config_chain["adwords"]["main_account_id"]
-TEST_ACCOUNT_ID = config_chain["adwords"]["test_account_id"]
 
 # used for interaction with AdWords API (retry if timed out)
-MAX_ATTEMPTS = config_chain["general"]["max_attempts"]
-SLEEP_INTERVAL = config_chain["general"]["sleep_interval"]
+MAX_ATTEMPTS = config["max_attempts"]
+SLEEP_INTERVAL = config["sleep_interval"]
 
 # Max lengths of keyword texts
 MAX_WORDS_KEYWORD = 10

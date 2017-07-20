@@ -1,11 +1,11 @@
 import suds
 
-from freedan import AdWordsError
-from freedan import ErrorRetryer
+from freedan import config
+from freedan import AdWordsError, ErrorRetryer
 
 MAX_OPERATIONS_STANDARD_UPLOAD = 5000
-MAX_ATTEMPTS = config_chain["general"]["max_attempts"]
-SLEEP_INTERVAL = config_chain["general"]["sleep_interval"]
+MAX_ATTEMPTS = config["max_attempts"]
+SLEEP_INTERVAL = config["sleep_interval"]
 
 
 class AdWordsStandardUploader:
