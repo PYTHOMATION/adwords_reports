@@ -23,7 +23,6 @@ from freedan.adwords_services.report_normaliser import ReportNormaliser
 
 from freedan.other_services.drive import Drive
 from freedan.other_services.error_retryer import ErrorRetryer
-from freedan.other_services.initiator import Initiator
 from freedan.other_services.text_handler import TextHandler
 from freedan.other_services.time_instance import TimeInstance
 
