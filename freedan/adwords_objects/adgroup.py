@@ -1,4 +1,4 @@
-from freedan import AdWords
+from freedan.adwords_services.adwords import AdWords
 from freedan.adwords_services.adwords import DEVICE_TO_ID
 
 

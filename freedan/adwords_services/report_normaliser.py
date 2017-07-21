@@ -1,7 +1,7 @@
 import itertools
 import pandas as pd
 
-from freedan import AdWords
+from freedan.adwords_services.adwords import AdWords
 
 SPECIAL_FLOATS = (pd.np.inf, -pd.np.inf, pd.np.nan)
 

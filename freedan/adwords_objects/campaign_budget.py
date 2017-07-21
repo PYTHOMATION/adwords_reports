@@ -1,6 +1,6 @@
 import uuid
 
-from freedan import AdWords
+from freedan.adwords_services.adwords import AdWords
 
 
 class CampaignBudget:

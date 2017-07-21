@@ -1,11 +1,14 @@
 import os
 import time
 import uuid
-
 import pandas as pd
 from googleads import adwords
+
 from freedan import config
-from freedan import Account, AdWordsStandardUploader, AdWordsBatchUploader, ErrorRetryer
+from freedan.adwords_objects.account import Account
+from freedan.adwords_services.adwords_standard_uploader import AdWordsStandardUploader
+from freedan.adwords_services.adwords_batch_uploader import AdWordsBatchUploader
+from freedan.other_services.error_retryer import ErrorRetryer
 
 # top level configurations
 API_VERSION = "v201705"

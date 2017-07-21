@@ -1,4 +1,6 @@
-from freedan import AdWords, KeywordFinalUrl
+from freedan.adwords_services.adwords import AdWords
+from freedan.adwords_objects.keyword_final_url import KeywordFinalUrl
+
 from freedan.adwords_services.adwords import MAX_WORDS_KEYWORD, MAX_CHARS_KEYWORD
 
 

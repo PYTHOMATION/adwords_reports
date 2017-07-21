@@ -5,8 +5,9 @@ from urllib.request import urlopen
 
 import pandas as pd
 
-from freedan import AdWordsError, ErrorRetryer
 from freedan import config
+from freedan.adwords_services.adwords_error import AdWordsError
+from freedan.other_services.error_retryer import ErrorRetryer
 
 
 PENDING_STATUSES = ('ACTIVE', 'AWAITING_FILE', 'CANCELING')

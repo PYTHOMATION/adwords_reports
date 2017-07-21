@@ -1,7 +1,8 @@
 import suds
 
 from freedan import config
-from freedan import AdWordsError, ErrorRetryer
+from freedan.adwords_services.adwords_error import AdWordsError
+from freedan.other_services.error_retryer import ErrorRetryer
 
 MAX_OPERATIONS_STANDARD_UPLOAD = 5000
 MAX_ATTEMPTS = config["max_attempts"]

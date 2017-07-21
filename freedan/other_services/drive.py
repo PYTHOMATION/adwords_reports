@@ -8,8 +8,8 @@ import pygsheets
 from googleapiclient.http import MediaIoBaseDownload
 from xlsxwriter.utility import xl_col_to_name
 
-from freedan import ErrorRetryer
 from freedan import config
+from freedan.other_services.error_retryer import ErrorRetryer
 
 MAX_ATTEMPTS = config["max_attempts"]
 SLEEP_INTERVAL = config["sleep_interval"]
