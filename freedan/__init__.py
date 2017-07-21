@@ -13,7 +13,7 @@ def from_json(path):
         return json.load(json_file)
 
 base_dir = os.path.dirname(__file__)  # deepest freedan folder
-config_path = os.path.join(base_dir, "config.json")
+config_path = os.path.join(base_dir, "_config.json")
 config = from_json(config_path)
 
 from freedan.adwords_objects.account import Account

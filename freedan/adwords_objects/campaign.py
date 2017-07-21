@@ -56,10 +56,10 @@ class Campaign:
         return operation
 
     @staticmethod
-    def set_language(campaign_id, language, operator="ADD"):
-        """ Set a language targeting on a campaign """
-        from src.lookup_tables.adwords_language_codes import language_codes
-        language_id = language_codes.get_value(language, "CriteriaId")
+    def set_language(campaign_id, language_id, operator="ADD"):
+        """ Set a language targeting on a campaign
+        Check language ids at
+        """
         operation = {
             "xsi_type": "CampaignCriterionOperation",
             "operator": operator,

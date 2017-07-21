@@ -10,8 +10,7 @@ from freedan.adwords_services.adwords_standard_uploader import AdWordsStandardUp
 from freedan.adwords_services.adwords_batch_uploader import AdWordsBatchUploader
 from freedan.other_services.error_retryer import ErrorRetryer
 
-# top level configurations
-API_VERSION = "v201705"
+API_VERSION = config["adwords_api_version"]
 
 # used for interaction with AdWords API (retry if timed out)
 MAX_ATTEMPTS = config["max_attempts"]
