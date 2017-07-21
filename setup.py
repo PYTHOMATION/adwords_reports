@@ -1,9 +1,20 @@
-from distutils.core import setup
+from setuptools import setup
 
+
+PACKAGES = [
+    'freedan',
+    'freedan.adwords_objects',
+    'freedan.adwords_services',
+    'freedan.other_services'
+]
 
 DEPENDENCIES = [
-    'googleads', 'pandas', 'google-api-python-client',
-    'pygsheets', 'unidecode', 'xlsxwriter'
+    'googleads',
+    'pandas',
+    'google-api-python-client',
+    'pygsheets',
+    'unidecode',
+    'xlsxwriter'
 ]
 
 CLASSIFIERS = [
@@ -14,7 +25,7 @@ CLASSIFIERS = [
 setup(
     name='freedan',
     version='0.1',
-    packages=['freedan'],
+    packages=PACKAGES,
     description='Convenient and fast API for Google AdWords utilizing pandas',
     url='https://github.com/SaturnFromTitan/Freedan',
     license='Apache License 2.0',
