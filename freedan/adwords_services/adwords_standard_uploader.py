@@ -1,12 +1,9 @@
 import suds
 
-from freedan import config
 from freedan.adwords_services.adwords_error import AdWordsError
 from freedan.other_services.error_retryer import ErrorRetryer
 
 MAX_OPERATIONS_STANDARD_UPLOAD = 5000
-MAX_ATTEMPTS = config["max_attempts"]
-SLEEP_INTERVAL = config["sleep_interval"]
 
 
 class AdWordsStandardUploader:
@@ -19,7 +16,7 @@ class AdWordsStandardUploader:
         self.client = adwords_service.client
         self.max_standard_upload = MAX_OPERATIONS_STANDARD_UPLOAD
 
-    @ErrorRetryer(MAX_ATTEMPTS, SLEEP_INTERVAL)
+    @ErrorRetryer()
     def upload(self, service_string, operations, debug, partial_failure, label):
         """ Uploads a list of operations to adwords api using standard mutate service.
         :param service_string: adwords service object associated with the operations

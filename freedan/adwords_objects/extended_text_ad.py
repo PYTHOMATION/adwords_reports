@@ -1,6 +1,10 @@
 from freedan.other_services.text_handler import TextHandler
-from freedan.adwords_services.adwords import (MAX_CHARS_HEADLINE1, MAX_CHARS_HEADLINE2,
-                                              MAX_CHARS_DESCRIPTION, MAX_CHARS_PATH1, MAX_CHARS_PATH2)
+
+MAX_CHARS_HEADLINE1 = 30
+MAX_CHARS_HEADLINE2 = 30
+MAX_CHARS_DESCRIPTION = 80
+MAX_CHARS_PATH1 = 15
+MAX_CHARS_PATH2 = 15
 
 
 class ExtendedTextAd:

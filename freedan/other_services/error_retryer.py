@@ -1,5 +1,8 @@
 import time
 
+DEFAULT_MAX_ATTEMPTS = 4
+DEFAULT_SLEEP_INTERVAL = 5
+
 
 class ErrorRetryer:
     """ Execute a function and in case an error occurs retry it x times. If it fails x times, throw an exception. 
@@ -7,7 +10,7 @@ class ErrorRetryer:
     :param sleep_interval: int, how long should it wait in between attempts
     :return: func
     """
-    def __init__(self, max_attempts, sleep_interval):
+    def __init__(self, max_attempts=DEFAULT_MAX_ATTEMPTS, sleep_interval=DEFAULT_SLEEP_INTERVAL):
         self.max_attempts = max_attempts
         self.sleep_interval = sleep_interval
 

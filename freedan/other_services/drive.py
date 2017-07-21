@@ -8,11 +8,7 @@ import pygsheets
 from googleapiclient.http import MediaIoBaseDownload
 from xlsxwriter.utility import xl_col_to_name
 
-from freedan import config
 from freedan.other_services.error_retryer import ErrorRetryer
-
-MAX_ATTEMPTS = config["max_attempts"]
-SLEEP_INTERVAL = config["sleep_interval"]
 
 
 class Drive:
@@ -24,7 +20,7 @@ class Drive:
         self.drive_service = self.initiate_api_connection("drive")
         self.sheet_service = self.initiate_api_connection("sheets")
 
-    @ErrorRetryer(MAX_ATTEMPTS, SLEEP_INTERVAL)
+    @ErrorRetryer()
     def initiate_api_connection(self, product):
         """
         Provides the according service to work with Google Sheets
@@ -43,7 +39,7 @@ class Drive:
         else:
             raise IOError("Unexpected product.")
 
-    @ErrorRetryer(MAX_ATTEMPTS, SLEEP_INTERVAL)
+    @ErrorRetryer()
     def worksheet_values(self, spreadsheet_id, data_range):
         """ Downloads data from a google work sheet and returns it as pandas dataframe
         :param spreadsheet_id: str
@@ -66,7 +62,7 @@ class Drive:
         df = pd.DataFrame(data, columns=header)
         return df
 
-    @ErrorRetryer(MAX_ATTEMPTS, SLEEP_INTERVAL)
+    @ErrorRetryer()
     def sheet_names(self, spreadsheet_id):
         """
         :param: spreadsheet_id: id of the spreadsheet
@@ -76,7 +72,7 @@ class Drive:
         worksheets = gc.open_by_key(spreadsheet_id).worksheets()
         return [worksheet.title for worksheet in worksheets]
 
-    @ErrorRetryer(MAX_ATTEMPTS, SLEEP_INTERVAL)
+    @ErrorRetryer()
     def download_csv(self, folder_id, file_name, destination_path, return_data_frame=True):
         """ Downloads a csv file from google drive.
         CAUTION: If return_data_frame=true local csv will be deleted

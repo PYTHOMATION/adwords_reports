@@ -1,20 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
-import json
 
-
-def from_json(path):
-    """ Reads a json file and returns a dictionary representation of it
-    :param path: str, path of json file
-    :return: dict
-    """
-    with open(path, mode="r") as json_file:
-        return json.load(json_file)
 
 base_dir = os.path.dirname(__file__)  # deepest freedan folder
-config_path = os.path.join(base_dir, "_config.json")
-config = from_json(config_path)
 
 from freedan.adwords_objects.account import Account
 from freedan.adwords_objects.campaign import Campaign

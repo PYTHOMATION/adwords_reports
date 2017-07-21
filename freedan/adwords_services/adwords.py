@@ -4,28 +4,12 @@ import uuid
 import pandas as pd
 from googleads import adwords
 
-from freedan import config
 from freedan.adwords_objects.account import Account
 from freedan.adwords_services.adwords_standard_uploader import AdWordsStandardUploader
 from freedan.adwords_services.adwords_batch_uploader import AdWordsBatchUploader
 from freedan.other_services.error_retryer import ErrorRetryer
 
-API_VERSION = config["adwords_api_version"]
-
-# used for interaction with AdWords API (retry if timed out)
-MAX_ATTEMPTS = config["max_attempts"]
-SLEEP_INTERVAL = config["sleep_interval"]
-
-# Max lengths of keyword texts
-MAX_WORDS_KEYWORD = 10
-MAX_CHARS_KEYWORD = 80
-
-# Max lengths of SearchAd components
-MAX_CHARS_HEADLINE1 = 30
-MAX_CHARS_HEADLINE2 = 30
-MAX_CHARS_DESCRIPTION = 80
-MAX_CHARS_PATH1 = 15
-MAX_CHARS_PATH2 = 15
+DEFAULT_API_VERSION = "v201705"
 
 # max and min bid modifiers
 MAX_BID_MODIFIER = 10.0
@@ -47,7 +31,7 @@ class AdWords:
         - Download reports
         - Upload operations using standard or batch functionality
     """
-    def __init__(self, credentials_path, api_version=API_VERSION, report_path=None):
+    def __init__(self, credentials_path, api_version=DEFAULT_API_VERSION, report_path=None):
         """
         :param api_version: str, normally you want to use the most recent version
         :param credentials_path: str, path to .yaml file
@@ -73,12 +57,12 @@ class AdWords:
             - and rounded to 2 fractional digits """
         return round(float(number) / MICRO_FACTOR, 2)
 
-    @ErrorRetryer(MAX_ATTEMPTS, SLEEP_INTERVAL)
+    @ErrorRetryer()
     def _init_api_connection(self):
         """ Initiates the adwords api client object """
         return adwords.AdWordsClient.LoadFromStorage(self.credentials_path)
 
-    @ErrorRetryer(MAX_ATTEMPTS, SLEEP_INTERVAL)
+    @ErrorRetryer()
     def init_service(self, service_string):
         """ Initiates the adwords services or report downloader """
         if self.client is None:
@@ -89,7 +73,7 @@ class AdWords:
         else:
             return self.client.GetService(service_string, version=self.api_version)
 
-    @ErrorRetryer(MAX_ATTEMPTS, SLEEP_INTERVAL)
+    @ErrorRetryer()
     def get_page(self, selector, service):
         """ Get "page" object of adwords objects (an iterable containing adwords objects)
         :param selector: nested dict that describes what is requested
@@ -128,7 +112,7 @@ class AdWords:
             raise LookupError("Nothing matches the selector.")
         return {account["name"]: account for account in account_page['entries']}
 
-    @ErrorRetryer(MAX_ATTEMPTS, SLEEP_INTERVAL)
+    @ErrorRetryer()
     def download_report(self, report_definition, zero_impressions=False,
                         path=None, file_name=None, delete_csv=True):
         """ Downloads a report to a temp csv -> dataframe
@@ -242,7 +226,7 @@ class AdWords:
             else:
                 return None
 
-    @ErrorRetryer(MAX_ATTEMPTS, SLEEP_INTERVAL)
+    @ErrorRetryer()
     def batch_job_helper(self):
         """ Get an AdWords BatchJobHelper object
         E.g. for temporary ids """

@@ -5,14 +5,11 @@ from urllib.request import urlopen
 
 import pandas as pd
 
-from freedan import config
 from freedan.adwords_services.adwords_error import AdWordsError
 from freedan.other_services.error_retryer import ErrorRetryer
 
 
 PENDING_STATUSES = ('ACTIVE', 'AWAITING_FILE', 'CANCELING')
-MAX_ATTEMPTS = config["max_attempts"]
-SLEEP_INTERVAL = config["sleep_interval"]
 
 
 class AdWordsBatchUploader:
@@ -38,7 +35,7 @@ class AdWordsBatchUploader:
             return int(batchjob_helper.GetId())
         return adwords_id
 
-    @ErrorRetryer(MAX_ATTEMPTS, SLEEP_INTERVAL)
+    @ErrorRetryer()
     def __add_batch_job(self):
         """ Adding a new BatchJob """
         batch_job_operations = [{
@@ -47,7 +44,7 @@ class AdWordsBatchUploader:
         }]
         return self.batch_job_service.mutate(batch_job_operations)['value'][0]
 
-    @ErrorRetryer(MAX_ATTEMPTS, SLEEP_INTERVAL)
+    @ErrorRetryer()
     def upload_operation(self, operations):
         """ Upload operations """
         print(datetime.datetime.now(), "Upload started...")
@@ -63,7 +60,7 @@ class AdWordsBatchUploader:
         errors = self.__report_on_partial_errors(raw_response)
         return raw_response, errors
 
-    @ErrorRetryer(MAX_ATTEMPTS, SLEEP_INTERVAL)
+    @ErrorRetryer()
     def __get_batch_job_download_url_when_ready(self, batch_sleep_interval):
         """ Attempts to fetch BatchJob download url multiple times. Sleeps for x seconds in between attempts """
         self.__update_attributes()
@@ -76,7 +73,7 @@ class AdWordsBatchUploader:
             if self.download_url is not None:
                 return self.download_url
 
-    @ErrorRetryer(MAX_ATTEMPTS, SLEEP_INTERVAL)
+    @ErrorRetryer()
     def __update_attributes(self):
         """ Get existing BatchJob by id. Including download url """
         selector = {
