@@ -3,6 +3,8 @@
 import os
 
 
+__version__ = "0.1.4"
+
 base_dir = os.path.dirname(__file__)  # deepest freedan folder
 
 from freedan.adwords_objects.account import Account
@@ -25,4 +27,3 @@ from freedan.adwords_services.report_normaliser import ReportNormaliser
 from freedan.other_services.drive import Drive
 from freedan.other_services.error_retryer import ErrorRetryer
 from freedan.other_services.text_handler import TextHandler
-from freedan.other_services.time_instance import TimeInstance
