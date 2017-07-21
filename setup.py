@@ -8,6 +8,10 @@ PACKAGES = [
     'freedan.other_services'
 ]
 
+DATA_FILES = [
+    ('', ['freedan/config.json'])
+]
+
 DEPENDENCIES = [
     'googleads',
     'pandas',
@@ -24,13 +28,14 @@ CLASSIFIERS = [
 
 setup(
     name='freedan',
-    version='0.1',
-    packages=PACKAGES,
     description='Convenient and fast API for Google AdWords utilizing pandas',
     url='https://github.com/SaturnFromTitan/Freedan',
+    version='0.1.2',
+    packages=PACKAGES,
+    data_files=DATA_FILES,
     license='Apache License 2.0',
-    author='Martin Winkel',
-    author_email='martin.winkel.pps@gmail.com',
     install_requires=DEPENDENCIES,
-    classifiers=CLASSIFIERS
+    classifiers=CLASSIFIERS,
+    author='Martin Winkel',
+    author_email='martin.winkel.pps@gmail.com'
 )
