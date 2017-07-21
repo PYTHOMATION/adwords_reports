@@ -38,7 +38,7 @@ class TextHandler:
         return text
 
     @staticmethod
-    def remove_double_space(text):
+    def remove_double_white_space(text):
         """ CAUTION: This removes other white space characters as well
                      Leading and trailing white spaces are also gone
         """
@@ -78,35 +78,3 @@ class TextHandler:
         text = TextHandler.without_dashes_and_punctuation(text)
         text = text.lower() if to_lower else text
         return text
-
-    @staticmethod
-    def first_entry_original(variations, prio_entry):
-        """ list of variations where 1st entry can be specified directly. Used in AdWords Ads """
-        as_list = variations if isinstance(variations, list) else list(variations)
-        index_of_prio = as_list.index(prio_entry)
-        as_list[0], as_list[index_of_prio] = as_list[index_of_prio], as_list[0]
-        return as_list
-
-    def standardized_city(self, decode=False):
-        """ Standardized city name. Decoding + removing some details.
-        E.g. Halle (Saale) -> Halle
-        In the above example Halle (Saale) would be too detailed since most people will only search for Halle
-        Used in Campaign Builder to create better keyword texts.
-        """
-        minimal = self.text
-        split_chars = r",(/"
-        for split_char in split_chars:
-            minimal = minimal.split(split_char, maxsplit=1)[0]
-        minimal = minimal.strip()
-
-        if decode:
-            return self.standardize(minimal)
-        else:
-            return self.replace_dashes(minimal)
-
-    def city_variations(self):
-        """ Multiple variations of city names """
-        variations = self.variations
-        variations.add(self.standardized_city(decode=True))
-        variations.add(self.standardized_city(decode=False))
-        return variations
