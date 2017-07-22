@@ -6,7 +6,10 @@ ADWORDS_FORBIDDEN_CHARS = "!=?@%^*;~’`´,(){}<>|"
 
 class TextHandler:
     """ Handling special characters and standardization.
-    Often needed when working with queries and/or matching them with keywords """
+    Often needed when working with queries, e.g. when matching them with keywords
+    It's also useful when uploading keywords or ads since some characters aren't permitted
+        -> see method "remove_forbidden_adwords_chars"
+    """
     def __init__(self, text):
         assert isinstance(text, str)
         self.text = text
