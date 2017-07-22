@@ -129,21 +129,6 @@ class AdWords:
                 account_selector["predicates"] = [skip_mcc_predicate]
         return account_selector
 
-    @ErrorRetryer()
-    def download_report(self, report_definition, zero_impressions=False):
-        """ Downloads a report to a temp csv -> dataframe
-        :param report_definition: nested dict, refer to method "report_definition" for easy creation
-        :param zero_impressions: bool
-        :return: report as dataframe
-        """
-        header = report_definition["selector"]["fields"]
-        data = self.report_downloader.DownloadReportAsString(
-            report_definition, skip_report_header=True, skip_column_header=True,
-            skip_report_summary=True, include_zero_impressions=zero_impressions)
-        data = io.StringIO(data)
-        report = pd.read_csv(data, names=header)
-        return report
-
     @staticmethod
     def report_definition(report_type, fields, last_days=None, date_min=None, date_max=None, predicates=None):
         """ Create report definition as needed in api call from meta information
@@ -165,7 +150,7 @@ class AdWords:
         # validate input parameters
         if dates_are_relative and dates_are_absolute:
             raise IOError("Please choose either days_ago or date_min/date_max for date range specification.")
-        elif not (dates_are_relative or dates_are_absolute):
+        elif not dates_are_relative and not dates_are_absolute:
             raise IOError("Please specify a date range.")
 
         # compute dates
@@ -175,7 +160,7 @@ class AdWords:
             date_min = (today - datetime.timedelta(last_days)).strftime("%Y%m%d")
 
         # standardize report type
-        report_type = report_type.upper()\
+        report_type = report_type.upper() \
             .replace(" ", "_")
 
         report_def = {
@@ -193,8 +178,22 @@ class AdWords:
         }
         if predicates is not None:
             report_def["selector"]["predicates"] = predicates
-
         return report_def
+
+    @ErrorRetryer()
+    def download_report(self, report_definition, zero_impressions=False):
+        """ Downloads a report to a temp csv -> dataframe
+        :param report_definition: nested dict, refer to method "report_definition" for easy creation
+        :param zero_impressions: bool
+        :return: report as dataframe
+        """
+        header = report_definition["selector"]["fields"]
+        data = self.report_downloader.DownloadReportAsString(
+            report_definition, skip_report_header=True, skip_column_header=True,
+            skip_report_summary=True, include_zero_impressions=zero_impressions)
+        data = io.StringIO(data)
+        report = pd.read_csv(data, names=header)
+        return report
 
     def download_objects(self, service, fields=("Id", ), predicates=None):
         """ Downloads adwords objects the classical way
