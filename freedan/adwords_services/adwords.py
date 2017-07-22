@@ -10,6 +10,7 @@ from freedan.adwords_objects.account import Account
 from freedan.adwords_services.adwords_standard_uploader import AdWordsStandardUploader
 from freedan.adwords_services.adwords_batch_uploader import AdWordsBatchUploader
 from freedan.other_services.error_retryer import ErrorRetryer
+from freedan import base_dir
 
 DEFAULT_API_VERSION = "v201705"
 
@@ -33,14 +34,14 @@ class AdWords:
         - Download reports
         - Upload operations using standard or batch functionality
     """
-    def __init__(self, credentials_path, api_version=DEFAULT_API_VERSION, report_path=None):
+    def __init__(self, credentials_path, api_version=DEFAULT_API_VERSION, report_path=base_dir):
         """
         :param api_version: str, normally you want to use the most recent version
         :param credentials_path: str, path to .yaml file
-        :param report_path: default path used in download_report method
+        :param report_path: default path used in download_report method. I'm trying to remove this part asap
         """
-        self.api_version = api_version
         self.credentials_path = credentials_path
+        self.api_version = api_version
         self.report_path = report_path
         self.client = self._init_api_connection()
         self.report_downloader = self._init_service("ReportDownloader")
@@ -85,22 +86,19 @@ class AdWords:
         service_object = self._init_service(service)
         return service_object.get(selector)
 
-    def accounts(self, fields=("Name", "CustomerId", "AccountLabels"), predicates=None, convert=True):
+    def accounts(self, predicates=None, skip_mccs=True, convert=True):
         """ Generator yielding accounts + business info ordered by account name
-        :param fields:
         :param predicates:
+        :param skip_mccs:
         :param convert: bool, convert to SearchAccount object
         :return: generator yielding dicts with core information of accounts
         """
-        account_selector = {
-            "fields": list(fields)
-        }
-        if predicates is not None:
-            account_selector["predicates"] = predicates
+        account_selector = self._account_selector(predicates, skip_mccs)
+        account_page = self._get_page(account_selector, "ManagedCustomerService")
+        if "entries" not in account_page:
+            raise LookupError("Nothing matches the selector.")
 
-        account_dict = self._accounts_by_name(account_selector)
-        for account_name in sorted(account_dict.keys()):
-            ad_account = account_dict[account_name]
+        for ad_account in account_page["entries"]:
             self.client.SetClientCustomerId(ad_account.customerId)  # select account
 
             if convert:
@@ -108,15 +106,33 @@ class AdWords:
             else:
                 yield ad_account
 
-    def _accounts_by_name(self, account_selector):
-        """ Creating dict with account_name -> SearchAccount """
-        if self.client is None:
-            raise ConnectionError("Please initiate API connection first")
+    @staticmethod
+    def _account_selector(predicates, skip_mccs):
+        account_selector = {
+            "fields": [
+                "Name", "CustomerId", "AccountLabels", "CanManageClients",
+                "CurrencyCode", "DateTimeZone", "TestAccount"
+            ],
+            "ordering": [{
+                "field": "Name",
+                "sortOrder": "ASCENDING"
+            }]
+        }
 
-        account_page = self._get_page(account_selector, "ManagedCustomerService")
-        if 'entries' not in account_page:
-            raise LookupError("Nothing matches the selector.")
-        return {account["name"]: account for account in account_page['entries']}
+        if predicates is not None:
+            account_selector["predicates"] = predicates
+
+        if skip_mccs:
+            skip_mcc_predicate = {
+                "field": "CanManageClients",
+                "operator": "EQUALS",
+                "values": "FALSE"
+            }
+            if "predicates" in account_selector:
+                account_selector["predicates"].append(skip_mcc_predicate)
+            else:
+                account_selector["predicates"] = [skip_mcc_predicate]
+        return account_selector
 
     @ErrorRetryer()
     def download_report(self, report_definition, zero_impressions=False):
@@ -139,11 +155,11 @@ class AdWords:
         return report
 
     @staticmethod
-    def report_definition(report_type, fields, days_ago, date_min, date_max, predicates):
+    def report_definition(report_type, fields, last_days=None, date_min=None, date_max=None, predicates=None):
         """ Create report definition as needed in api call from meta information
         :param report_type: str, https://developers.google.com/adwords/api/docs/appendix/reports
         :param fields: list of str
-        :param days_ago: int, date_max = today and date_min = today-days_ago
+        :param last_days: int, date_max = today and date_min = today-days_ago
                               not compatible with date_min/date_max
         :param date_min: str, format YYYYMMDD or YYYY-MM-DD
                               not compatible with date_min/date_max
@@ -151,7 +167,7 @@ class AdWords:
                               not compatible with date_min/date_max
         :param predicates: list of dicts
         """
-        dates_are_relative = days_ago is not None
+        dates_are_relative = last_days is not None
         dates_are_absolute = date_min is not None or date_max is not None
         if dates_are_absolute:
             assert date_min and date_max
@@ -166,7 +182,7 @@ class AdWords:
         if dates_are_relative:
             today = datetime.date.today()
             date_max = today.strftime("%Y%m%d")
-            date_min = (today - datetime.timedelta(days_ago)).strftime("%Y%m%d")
+            date_min = (today - datetime.timedelta(last_days)).strftime("%Y%m%d")
 
         report_def = {
             "reportName": "name",
