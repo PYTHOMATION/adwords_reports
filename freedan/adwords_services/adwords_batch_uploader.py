@@ -21,7 +21,7 @@ class AdWordsBatchUploader:
         :param adwords_service: AdWords object 
         """
         self.batch_job_helper = adwords_service.batch_job_helper()
-        self.batch_job_service = adwords_service.init_service("BatchJobService")
+        self.batch_job_service = adwords_service._init_service("BatchJobService")
         self.adwords_object = self.__add_batch_job()
         self.upload_url = self.adwords_object["uploadUrl"]["url"]
         self.id = self.adwords_object["id"]

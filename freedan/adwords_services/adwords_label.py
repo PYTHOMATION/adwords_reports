@@ -32,7 +32,7 @@ class AdWordsLabel:
                 'values': self.text
             }]
         }
-        label_page = self.adwords_service.get_page(label_selector, "LabelService")
+        label_page = self.adwords_service._get_page(label_selector, "LabelService")
 
         if 'entries' in label_page:
             return label_page['entries'][0].id

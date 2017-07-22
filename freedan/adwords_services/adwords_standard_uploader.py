@@ -27,7 +27,7 @@ class AdWordsStandardUploader:
         :return: response from adwords
         """
         assert isinstance(operations, list)
-        service = self.adwords_service.init_service(service_string)
+        service = self.adwords_service._init_service(service_string)
 
         self.client.partial_failure = partial_failure
         self.client.validate_only = debug

@@ -1,6 +1,8 @@
 import os
 import time
 import uuid
+
+import datetime
 import pandas as pd
 from googleads import adwords
 
@@ -41,7 +43,7 @@ class AdWords:
         self.credentials_path = credentials_path
         self.report_path = report_path
         self.client = self._init_api_connection()
-        self.report_downloader = self.init_service("ReportDownloader")
+        self.report_downloader = self._init_service("ReportDownloader")
 
     @staticmethod
     def euro_to_micro(number):
@@ -63,7 +65,7 @@ class AdWords:
         return adwords.AdWordsClient.LoadFromStorage(self.credentials_path)
 
     @ErrorRetryer()
-    def init_service(self, service_string):
+    def _init_service(self, service_string):
         """ Initiates the adwords services or report downloader """
         if self.client is None:
             raise ConnectionError("Please initiate API connection first using .initiate_api_connection()")
@@ -74,59 +76,57 @@ class AdWords:
             return self.client.GetService(service_string, version=self.api_version)
 
     @ErrorRetryer()
-    def get_page(self, selector, service):
+    def _get_page(self, selector, service):
         """ Get "page" object of adwords objects (an iterable containing adwords objects)
         :param selector: nested dict that describes what is requested
         :param service: str, identifying adwords service that is responsible
         :return: adwords page object
         """
-        service_object = self.init_service(service)
+        service_object = self._init_service(service)
         return service_object.get(selector)
 
-    def accounts(self, account_selector, convert=True):
+    def accounts(self, fields=("Name", "CustomerId", "AccountLabels"), predicates=None, convert=True):
         """ Generator yielding accounts + business info ordered by account name
-        :param account_selector: dict
+        :param fields:
+        :param predicates:
         :param convert: bool, convert to SearchAccount object
         :return: generator yielding dicts with core information of accounts
         """
-        account_dict = self.accounts_by_name(account_selector)
+        account_selector = {
+            "fields": list(fields)
+        }
+        if predicates is not None:
+            account_selector["predicates"] = predicates
+
+        account_dict = self._accounts_by_name(account_selector)
         for account_name in sorted(account_dict.keys()):
             ad_account = account_dict[account_name]
+            self.client.SetClientCustomerId(ad_account.customerId)  # select account
 
             if convert:
-                search_account = Account.from_ad_account(ad_account=ad_account)
-
-                self.client.SetClientCustomerId(search_account.id)  # select account
-                yield search_account
+                yield Account.from_ad_account(ad_account=ad_account)
             else:
-                self.client.SetClientCustomerId(ad_account.customerId)  # select account
                 yield ad_account
 
-    def accounts_by_name(self, account_selector):
+    def _accounts_by_name(self, account_selector):
         """ Creating dict with account_name -> SearchAccount """
         if self.client is None:
             raise ConnectionError("Please initiate API connection first")
 
-        account_page = self.get_page(account_selector, "ManagedCustomerService")
+        account_page = self._get_page(account_selector, "ManagedCustomerService")
         if 'entries' not in account_page:
             raise LookupError("Nothing matches the selector.")
         return {account["name"]: account for account in account_page['entries']}
 
     @ErrorRetryer()
-    def download_report(self, report_definition, zero_impressions=False,
-                        path=None, file_name=None, delete_csv=True):
+    def download_report(self, report_definition, zero_impressions=False):
         """ Downloads a report to a temp csv -> dataframe
-        :param report_definition: nested dict
+        :param report_definition: nested dict, refer to method "report_definition" for easy creation
         :param zero_impressions: bool
-        :param path: str, path to folder where file should rest
-        :param file_name: str, with file type
-        :param delete_csv: bool
         :return: report as dataframe
         """
-        file_name = file_name or "temp_{uid}.csv".format(uid=uuid.uuid4().int)
-        path = path or self.report_path or base_dir
-
-        report_path = os.path.join(path, file_name)
+        file_name = "temp_{uid}.csv".format(uid=uuid.uuid4().int)
+        report_path = os.path.join(self.report_path, file_name)
         with open(report_path, mode='w') as report_csv:
             header = report_definition["selector"]["fields"]
             report_csv.write(",".join(header) + "\n")
@@ -135,28 +135,81 @@ class AdWords:
                 skip_report_summary=True, include_zero_impressions=zero_impressions)
 
         report = pd.read_csv(report_path, encoding="utf-8")
-        if delete_csv:
-            os.remove(report_path)
+        os.remove(report_path)
         return report
 
-    def download_objects(self, predicates, service, fields=("Id", )):
-        """ Downloads adwords campaigns the classical way
-        CAUTION: Only use this, when necessary (i.e. if there's no report type available containing this information
-        E.g. Campaign language targetings are a use case
+    @staticmethod
+    def report_definition(report_type, fields, days_ago, date_min, date_max, predicates):
+        """ Create report definition as needed in api call from meta information
+        :param report_type: str, https://developers.google.com/adwords/api/docs/appendix/reports
+        :param fields: list of str
+        :param days_ago: int, date_max = today and date_min = today-days_ago
+                              not compatible with date_min/date_max
+        :param date_min: str, format YYYYMMDD or YYYY-MM-DD
+                              not compatible with date_min/date_max
+        :param date_max: str, format YYYYMMDD or YYYY-MM-DD
+                              not compatible with date_min/date_max
+        :param predicates: list of dicts
+        """
+        dates_are_relative = days_ago is not None
+        dates_are_absolute = date_min is not None or date_max is not None
+        if dates_are_absolute:
+            assert date_min and date_max
+
+        # validate input parameters
+        if dates_are_relative and dates_are_absolute:
+            raise IOError("Please choose either days_ago or date_min/date_max for date range specification.")
+        elif not (dates_are_relative or dates_are_absolute):
+            raise IOError("Please specify a date range.")
+
+        # compute dates
+        if dates_are_relative:
+            today = datetime.date.today()
+            date_max = today.strftime("%Y%m%d")
+            date_min = (today - datetime.timedelta(days_ago)).strftime("%Y%m%d")
+
+        report_def = {
+            "reportName": "name",
+            "dateRangeType": "CUSTOM_DATE",
+            "reportType": report_type.upper(),
+            "downloadFormat": "CSV",
+            "selector": {
+                "fields": fields,
+                "dateRange": {
+                    "min": date_min.replace("-", ""),
+                    "max": date_max.replace("-", "")
+                }
+            }
+        }
+        if predicates is not None:
+            report_def["selector"]["predicates"] = predicates
+
+        return report_def
+
+    def download_objects(self, service, fields=("Id", ), predicates=None):
+        """ Downloads adwords objects the classical way
+        CAUTION: Only use this, when necessary i.e. if there's no report type available containing this information
+        For instance campaign language targetings are a use case for that
+        :param service: str, identifying adwords service that's associated with those objects
+        :param fields: list of str
+        :param predicates: list of dicts
+        :return: list of objects
         """
         offset = 0
+        more_pages = True
         request = {
             "fields": list(fields),
-            "predicates": predicates,
             "paging": {
                 'startIndex': str(offset),
                 'numberResults': str(PAGE_SIZE)
             }
         }
-        more_pages = True
+        if predicates is not None:
+            request["request"] = predicates
+
         results = list()
         while more_pages:
-            page = self.get_page(request, service)
+            page = self._get_page(request, service)
             if 'entries' not in page:
                 raise LookupError("Nothing matches the selector.")
 
