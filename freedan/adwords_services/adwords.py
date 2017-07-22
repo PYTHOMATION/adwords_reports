@@ -1,7 +1,5 @@
-import os
+import io
 import time
-import uuid
-
 import datetime
 import pandas as pd
 from googleads import adwords
@@ -10,7 +8,6 @@ from freedan.adwords_objects.account import Account
 from freedan.adwords_services.adwords_standard_uploader import AdWordsStandardUploader
 from freedan.adwords_services.adwords_batch_uploader import AdWordsBatchUploader
 from freedan.other_services.error_retryer import ErrorRetryer
-from freedan import base_dir
 
 DEFAULT_API_VERSION = "v201705"
 
@@ -34,15 +31,13 @@ class AdWords:
         - Download reports
         - Upload operations using standard or batch functionality
     """
-    def __init__(self, credentials_path, api_version=DEFAULT_API_VERSION, report_path=base_dir):
+    def __init__(self, credentials_path, api_version=DEFAULT_API_VERSION):
         """
         :param api_version: str, normally you want to use the most recent version
         :param credentials_path: str, path to .yaml file
-        :param report_path: default path used in download_report method. I'm trying to remove this part asap
         """
         self.credentials_path = credentials_path
         self.api_version = api_version
-        self.report_path = report_path
         self.client = self._init_api_connection()
         self.report_downloader = self._init_service("ReportDownloader")
 
@@ -141,17 +136,12 @@ class AdWords:
         :param zero_impressions: bool
         :return: report as dataframe
         """
-        file_name = "temp_{uid}.csv".format(uid=uuid.uuid4().int)
-        report_path = os.path.join(self.report_path, file_name)
-        with open(report_path, mode='w') as report_csv:
-            header = report_definition["selector"]["fields"]
-            report_csv.write(",".join(header) + "\n")
-            self.report_downloader.DownloadReport(
-                report_definition, report_csv, skip_report_header=True, skip_column_header=True,
-                skip_report_summary=True, include_zero_impressions=zero_impressions)
-
-        report = pd.read_csv(report_path, encoding="utf-8")
-        os.remove(report_path)
+        header = report_definition["selector"]["fields"]
+        data = self.report_downloader.DownloadReportAsString(
+            report_definition, skip_report_header=True, skip_column_header=True,
+            skip_report_summary=True, include_zero_impressions=zero_impressions)
+        data = io.StringIO(data)
+        report = pd.read_csv(data, names=header)
         return report
 
     @staticmethod
@@ -184,10 +174,14 @@ class AdWords:
             date_max = today.strftime("%Y%m%d")
             date_min = (today - datetime.timedelta(last_days)).strftime("%Y%m%d")
 
+        # standardize report type
+        report_type = report_type.upper()\
+            .replace(" ", "_")
+
         report_def = {
             "reportName": "name",
             "dateRangeType": "CUSTOM_DATE",
-            "reportType": report_type.upper(),
+            "reportType": report_type,
             "downloadFormat": "CSV",
             "selector": {
                 "fields": fields,
