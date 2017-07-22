@@ -39,7 +39,7 @@ class AdGroup:
         return operation
 
     @staticmethod
-    def delete_operation(campaign_id, adgroup_id):
+    def delete_operation(adgroup_id):
         """ Operation to delete an adgroup """
         operation = {
             "xsi_type": "AdGroupOperation",
@@ -47,7 +47,6 @@ class AdGroup:
             "operand": {
                 "xsi_type": "AdGroup",
                 "id": adgroup_id,
-                "campaignId": campaign_id,
                 "status": "REMOVED"
             }
         }

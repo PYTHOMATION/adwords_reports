@@ -40,7 +40,7 @@ class AdWords:
         self.api_version = api_version
         self.client = self._init_api_connection()
         self.top_level_account_id = self.client.client_customer_id
-        self.report_downloader = self._init_service("ReportDownloader")
+        self.report_downloader = self.init_service("ReportDownloader")
 
     @staticmethod
     def euro_to_micro(number):
@@ -62,7 +62,7 @@ class AdWords:
         return adwords.AdWordsClient.LoadFromStorage(self.credentials_path)
 
     @ErrorRetryer()
-    def _init_service(self, service_string):
+    def init_service(self, service_string):
         """ Initiates the adwords services or report downloader """
         if self.client is None:
             raise ConnectionError("Please initiate API connection first using .initiate_api_connection()")
@@ -79,7 +79,7 @@ class AdWords:
         :param service: str, identifying adwords service that is responsible
         :return: adwords page object
         """
-        service_object = self._init_service(service)
+        service_object = self.init_service(service)
         return service_object.get(selector)
 
     def accounts(self, predicates=None, skip_mccs=True, convert=True):
@@ -131,11 +131,12 @@ class AdWords:
         return account_selector
 
     @staticmethod
-    def report_definition(report_type, fields, last_days=None, date_min=None, date_max=None, predicates=None):
+    def report_definition(report_type, fields, predicates=None, last_days=None, date_min=None, date_max=None):
         """ Create report definition as needed in api call from meta information
+        If date range isn't specified, last_days will be set to 7
         :param report_type: str, https://developers.google.com/adwords/api/docs/appendix/reports
         :param fields: list of str
-        :param last_days: int, date_max = today and date_min = today-days_ago
+        :param last_days: int, date_max = yesterday and date_min = today - days_ago
                               not compatible with date_min/date_max
         :param date_min: str, format YYYYMMDD or YYYY-MM-DD
                               not compatible with date_min/date_max
@@ -152,12 +153,13 @@ class AdWords:
         if dates_are_relative and dates_are_absolute:
             raise IOError("Please choose either days_ago or date_min/date_max for date range specification.")
         elif not dates_are_relative and not dates_are_absolute:
-            raise IOError("Please specify a date range.")
+            last_days = 7
+            dates_are_relative = True
 
         # compute dates
         if dates_are_relative:
             today = datetime.date.today()
-            date_max = today.strftime("%Y%m%d")
+            date_max = (today - datetime.timedelta(1)).strftime("%Y%m%d")
             date_min = (today - datetime.timedelta(last_days)).strftime("%Y%m%d")
 
         # standardize report type
@@ -182,16 +184,16 @@ class AdWords:
         return report_def
 
     @ErrorRetryer()
-    def download_report(self, report_definition, zero_impressions=False):
+    def download_report(self, report_definition, include_0_imp=False):
         """ Downloads a report to a temp csv -> dataframe
         :param report_definition: nested dict, refer to method "report_definition" for easy creation
-        :param zero_impressions: bool
+        :param include_0_imp: bool
         :return: report as dataframe
         """
         header = report_definition["selector"]["fields"]
         data = self.report_downloader.DownloadReportAsString(
             report_definition, skip_report_header=True, skip_column_header=True,
-            skip_report_summary=True, include_zero_impressions=zero_impressions)
+            skip_report_summary=True, include_zero_impressions=include_0_imp)
         data = io.StringIO(data)
         report = pd.read_csv(data, names=header)
         return report
@@ -231,14 +233,14 @@ class AdWords:
             time.sleep(0.5)
         return results
 
-    def upload(self, operations, debug, partial_failure=True, service_string=None, label=False, method="standard",
+    def upload(self, operations, debug, partial_failure=True, service=None, is_label=False, method="standard",
                report_on_results=True, batch_sleep_interval=-1):
         """ Taking care of all scenarios when operations need to be uploaded to AdWords.
         :param operations: list of operations
         :param debug: bool
         :param partial_failure: bool
-        :param service_string: service of operations. not needed for batch upload
-        :param label: bool. Label upload works slightly different
+        :param service: service of operations. not needed for batch upload
+        :param is_label: bool. Label upload works slightly different
         :param method: method for uploads < 5k. standard is faster, but less powerful
         :param report_on_results: bool, whether batchjob should download results or not
         :param batch_sleep_interval: int, -1 = exponential
@@ -255,7 +257,7 @@ class AdWords:
         if amount_operations == 0:
             return None
         elif method == "standard":
-            return self.__standard_upload(service_string, operations, debug, partial_failure, label)
+            return self.__standard_upload(service, operations, debug, partial_failure, is_label)
         else:
             return self.__batch_upload(operations, debug, report_on_results, batch_sleep_interval)
 

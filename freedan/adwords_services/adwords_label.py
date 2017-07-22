@@ -46,7 +46,7 @@ class AdWordsLabel:
         """ Creates the label via standard upload to AdWords API """
         operation = [self.add_operation()]
         print("Creating label %s" % self.text)
-        return self.adwords_service.upload(operation, debug=False, service_string="LabelService")
+        return self.adwords_service.upload(operation, debug=False, service="LabelService")
 
     def add_operation(self):
         """ Operation to add a label object in AdWords """

@@ -107,3 +107,4 @@ ENV/
 .mypy_cache/
 adwords_credentials.yaml
 try_stuff.py
+examples

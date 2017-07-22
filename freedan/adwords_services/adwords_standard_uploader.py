@@ -27,36 +27,33 @@ class AdWordsStandardUploader:
         :return: response from adwords
         """
         assert isinstance(operations, list)
-        service = self.adwords_service._init_service(service_string)
+        service = self.adwords_service.init_service(service_string)
 
         self.client.partial_failure = partial_failure
         self.client.validate_only = debug
         print("##### OperationUpload is LIVE: %s. #####" % (not self.client.validate_only))
 
         result = None
-        for operation_chunk in self.chunks(operations, self.max_standard_upload):
-            try:
-                if label:
-                    result = service.mutateLabel(operation_chunk)
-                else:
-                    result = service.mutate(operation_chunk)
+        try:
+            if label:
+                result = service.mutateLabel(operations)
+            else:
+                result = service.mutate(operations)
 
-            except suds.WebFault as e:
-                error_list = e.fault.detail.ApiExceptionFault.errors
-                self.print_failures(error_list)
+        except suds.WebFault as e:
+            error_list = e.fault.detail.ApiExceptionFault.errors
+            self.print_failures(error_list)
+        finally:
+            # reset validate only header
+            self.client.validate_only = False
 
-            if self.client.partial_failure and (result is not None) and 'partialFailureErrors' in result:
-                error_list = result['partialFailureErrors']
-                self.print_failures(error_list)
+        if not debug and result is None:
+            print("All operations successfully uploaded.")
+        elif self.client.partial_failure and 'partialFailureErrors' in result:
+            error_list = result['partialFailureErrors']
+            self.print_failures(error_list)
 
-        self.client.validate_only = False  # reset validate only header
         return result
-
-    @staticmethod
-    def chunks(values, chunk_size):
-        """Yield successive n-sized chunks from values."""
-        for i in range(0, len(values), chunk_size):
-            yield values[i:i + chunk_size]
 
     @staticmethod
     def print_failures(error_list):

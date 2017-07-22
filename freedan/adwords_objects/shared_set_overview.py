@@ -36,6 +36,6 @@ class SharedSetOverview:
                 }]
             }
         }
-        shared_sets = adwords_service.download_report(report_definition, zero_impressions=True)\
+        shared_sets = adwords_service.download_report(report_definition, include_0_imp=True)\
             .rename(columns={"Name": "SharedSetName"})
         return shared_sets

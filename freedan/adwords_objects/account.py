@@ -26,5 +26,5 @@ class Account:
 
     def __repr__(self):
         """ user friendly readable string representation """
-        representation = "\nAccountName: {name} (ID: {id})\n".format(name=self.name, id=self.id)
+        representation = "\nAccountName: {name} (ID: {id})".format(name=self.name, id=self.id)
         return representation
