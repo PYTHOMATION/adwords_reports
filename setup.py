@@ -33,10 +33,7 @@ PACKAGES = [
 DEPENDENCIES = [
     "googleads",
     "pandas",
-    "google-api-python-client",
-    "pygsheets",
-    "unidecode",
-    "xlsxwriter"
+    "unidecode"
 ]
 
 CLASSIFIERS = [

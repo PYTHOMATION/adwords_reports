@@ -39,6 +39,7 @@ class AdWords:
         self.credentials_path = credentials_path
         self.api_version = api_version
         self.client = self._init_api_connection()
+        self.top_level_account_id = self.client.client_customer_id
         self.report_downloader = self._init_service("ReportDownloader")
 
     @staticmethod
