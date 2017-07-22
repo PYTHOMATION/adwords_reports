@@ -233,13 +233,13 @@ class AdWords:
             time.sleep(0.5)
         return results
 
-    def upload(self, operations, debug, partial_failure=True, service=None, is_label=False, method="standard",
+    def upload(self, operations, is_debug, partial_failure=True, service_text=None, is_label=False, method="standard",
                report_on_results=True, batch_sleep_interval=-1):
         """ Taking care of all scenarios when operations need to be uploaded to AdWords.
         :param operations: list of operations
-        :param debug: bool
+        :param is_debug: bool
         :param partial_failure: bool
-        :param service: service of operations. not needed for batch upload
+        :param service_text: service of operations. not needed for batch upload
         :param is_label: bool. Label upload works slightly different
         :param method: method for uploads < 5k. standard is faster, but less powerful
         :param report_on_results: bool, whether batchjob should download results or not
@@ -257,18 +257,18 @@ class AdWords:
         if amount_operations == 0:
             return None
         elif method == "standard":
-            return self.__standard_upload(service, operations, debug, partial_failure, is_label)
+            return self.__standard_upload(service_text, operations, is_debug, partial_failure, is_label)
         else:
-            return self.__batch_upload(operations, debug, report_on_results, batch_sleep_interval)
+            return self.__batch_upload(operations, is_debug, report_on_results, batch_sleep_interval)
 
-    def __standard_upload(self, service_string, operations, debug, partial_failure, label):
+    def __standard_upload(self, service_text, operations, is_debug, partial_failure, is_label):
         """ Upload operations using the AdWords standard upload """
-        if service_string is None:
+        if service_text is None:
             raise IOError("Please provide the according service of the operations")
-        standard_uploader = AdWordsStandardUploader(self, service_string, operations, debug, partial_failure, label)
-        return standard_uploader.execute()
+        standard_uploader = AdWordsStandardUploader(self, is_debug, partial_failure)
+        return standard_uploader.execute(operations, service_text, is_label)
 
-    def __batch_upload(self, operations, debug, report_on_results, batch_sleep_interval):
+    def __batch_upload(self, operations, is_debug, report_on_results, batch_sleep_interval):
         """ Uploads a batch of operations to adwords api using batch job service.
         :param operations: tuple of lists of operations
         :param report_on_results: bool, specifies whether one should download results or not. Skipping speeds up execution
@@ -276,8 +276,8 @@ class AdWords:
         :return: return value of adwords
         """
         print("Uploading operations using batchjob")
-        print("##### OperationUpload is LIVE: {is_live}. #####".format(is_live=(not debug)))
-        if debug:
+        print("##### OperationUpload is LIVE: {is_live}. #####".format(is_live=(not is_debug)))
+        if is_debug:
             print("Operations not uploaded due to debug. BatchUpload doesn't support validate only header...")
             return None
 

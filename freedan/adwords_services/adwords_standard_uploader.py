@@ -7,56 +7,44 @@ MAX_OPERATIONS_STANDARD_UPLOAD = 5000
 
 
 class AdWordsStandardUploader:
-    """ AdWords service object for standard uploads of operations to AdWords API """
-    def __init__(self, adwords_service, service_text, operations, is_debug, is_partial_failure, is_label):
-        """
-        :param adwords_service: AdWords object
-        :param service_text: adwords service object associated with the operations
-        :param operations: list of operations
-        :param is_debug: bool
-        :param is_partial_failure: bool
-        :param is_label: bool 
-        """
-        assert isinstance(operations, list)
-
+    """ AdWords service object for standard uploads of mutate operations to AdWords API """
+    def __init__(self, adwords_service, is_debug, partial_failure):
+        self.adwords_service = adwords_service
         self.client = adwords_service.client
-        self.service = adwords_service.init_service(service_text)
-        self.operations = operations
         self.is_debug = is_debug
-        self.is_partial_failure = is_partial_failure
-        self.is_label = is_label
+        self.partial_failure = partial_failure
 
-    def execute(self):
+    def execute(self, operations, service_text, is_label):
         """ Uploads a list of operations to adwords api using standard mutate service.
         :return: response from adwords API
         """
-        self.client.partial_failure = self.is_partial_failure
+        service = self.adwords_service.init_service(service_text)
+
+        self.client.partial_failure = self.partial_failure
         self.client.validate_only = self.is_debug
         print("##### OperationUpload is LIVE: %s. #####" % (not self.client.validate_only))
 
-        result = None
         try:
-            result = self.upload()
+            result = self.upload(operations, service, is_label)
+            error_list = list()
+            if 'partialFailureErrors' in result:
+                error_list = result['partialFailureErrors']
         except suds.WebFault as e:
+            result = None
             error_list = e.fault.detail.ApiExceptionFault.errors
-            self.print_failures(error_list)
         finally:
-            # reset validate only header so further API (read) calls will work
+            # reset validate only header so later API get calls will work
             self.client.validate_only = False
 
-        if result is None and (not self.is_debug):
-            print("All operations successfully uploaded.")
-        elif result is not None and self.is_partial_failure and 'partialFailureErrors' in result:
-            error_list = result['partialFailureErrors']
-            self.print_failures(error_list)
+        self.print_failures(error_list)
         return result
 
     @ErrorRetryer()
-    def upload(self):
-        if self.is_label:
-            return self.service.mutateLabel(self.operations)
+    def upload(self, operations, service, is_label):
+        if is_label:
+            return service.mutateLabel(operations)
         else:
-            return self.service.mutate(self.operations)
+            return service.mutate(operations)
 
     @staticmethod
     def print_failures(error_list):
@@ -67,5 +55,7 @@ class AdWordsStandardUploader:
             error = AdWordsError.from_adwords_error(index=index, adwords_error=adwords_error)
             error_texts.append(error.to_string())
 
-        error_message = "\n".join(error_texts) or "All operations successfully uploaded."
-        print(error_message)
+        if error_texts:
+            print("\n".join(error_texts))
+        else:
+            print("All operations successfully uploaded.")
