@@ -265,8 +265,8 @@ class AdWords:
         """ Upload operations using the AdWords standard upload """
         if service_string is None:
             raise IOError("Please provide the according service of the operations")
-        standard_upload = AdWordsStandardUploader(self)
-        return standard_upload.upload(service_string, operations, debug, partial_failure, label)
+        standard_uploader = AdWordsStandardUploader(self, service_string, operations, debug, partial_failure, label)
+        return standard_uploader.execute()
 
     def __batch_upload(self, operations, debug, report_on_results, batch_sleep_interval):
         """ Uploads a batch of operations to adwords api using batch job service.
@@ -282,12 +282,12 @@ class AdWords:
             return None
 
         else:
-            batch_job = AdWordsBatchUploader(self)
-            batch_job.upload_operation(operations)
+            batch_uploader = AdWordsBatchUploader(self)
+            batch_uploader.upload_operation(operations)
 
             # report on partial failures
             if report_on_results:
-                return batch_job.report_on_results(batch_sleep_interval)
+                return batch_uploader.report_on_results(batch_sleep_interval)
             else:
                 return None
 
