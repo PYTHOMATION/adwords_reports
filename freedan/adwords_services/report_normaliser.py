@@ -12,21 +12,6 @@ class ReportNormaliser:
         pass
 
     @staticmethod
-    def add_business_info(df, account, info=("AccountName", )):
-        """ Adding business info derived from SearchAccount object.
-        Needed when looping over accounts to create one big csv file to analyse
-        """
-        mapping = {
-            "Domain": account.domain,
-            "AccountType": account.type,
-            "AccountName": account.name,
-        }
-        assert set(info) <= set(mapping.keys())
-        for index, dim in enumerate(info):
-            df.insert(index, dim, mapping[dim])
-        return df
-
-    @staticmethod
     def replace_special_float(df, new_value=0.0, special_values=SPECIAL_FLOATS):
         """ Replace special values like np.nan or np.inf.
         Needed when calculating rates like VCR or CTR directly (vision by 0 may occur)
