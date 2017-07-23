@@ -3,10 +3,10 @@
 
 
 def test_standard_upload_chunking():
-    from freedan import AdWordsStandardUploader
+    from freedan import StandardUploader
 
     vals = list(range(100))
-    chunks = list(AdWordsStandardUploader.chunks(vals, 15))
+    chunks = list(StandardUploader.chunks(vals, 15))
     assert len(chunks) == 7
     assert [len(chunk) for chunk in chunks] == [15 if i <= 5 else 10 for i in range(7)]
 

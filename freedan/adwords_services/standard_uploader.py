@@ -6,7 +6,7 @@ from freedan.other_services.error_retryer import ErrorRetryer
 MAX_OPERATIONS_STANDARD_UPLOAD = 5000
 
 
-class AdWordsStandardUploader:
+class StandardUploader:
     """ AdWords service object for standard uploads of mutate operations to AdWords API """
     def __init__(self, adwords_service, is_debug, partial_failure):
         self.adwords_service = adwords_service
@@ -14,11 +14,11 @@ class AdWordsStandardUploader:
         self.is_debug = is_debug
         self.partial_failure = partial_failure
 
-    def execute(self, operations, service_text, is_label):
+    def execute(self, operations, service_name, is_label):
         """ Uploads a list of operations to adwords api using standard mutate service.
         :return: response from adwords API
         """
-        service = self.adwords_service.init_service(service_text)
+        service = self.adwords_service.init_service(service_name)
 
         self.client.partial_failure = self.partial_failure
         self.client.validate_only = self.is_debug

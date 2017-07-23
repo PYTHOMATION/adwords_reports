@@ -12,7 +12,7 @@ from freedan.other_services.error_retryer import ErrorRetryer
 PENDING_STATUSES = ('ACTIVE', 'AWAITING_FILE', 'CANCELING')
 
 
-class AdWordsBatchUploader:
+class BatchUploader:
     """ AdWords service class that handles
         - batch uploads
         - and the related error handling """

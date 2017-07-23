@@ -5,8 +5,8 @@ import pandas as pd
 from googleads import adwords
 
 from freedan.adwords_objects.account import Account
-from freedan.adwords_services.adwords_standard_uploader import AdWordsStandardUploader
-from freedan.adwords_services.adwords_batch_uploader import AdWordsBatchUploader
+from freedan.adwords_services.standard_uploader import StandardUploader
+from freedan.adwords_services.batch_uploader import BatchUploader
 from freedan.other_services.error_retryer import ErrorRetryer
 
 DEFAULT_API_VERSION = "v201705"
@@ -233,13 +233,13 @@ class AdWords:
             time.sleep(0.5)
         return results
 
-    def upload(self, operations, is_debug, partial_failure=True, service_text=None, is_label=False, method="standard",
+    def upload(self, operations, is_debug, partial_failure=True, service_name=None, is_label=False, method="standard",
                report_on_results=True, batch_sleep_interval=-1):
         """ Taking care of all scenarios when operations need to be uploaded to AdWords.
         :param operations: list of operations
         :param is_debug: bool
         :param partial_failure: bool
-        :param service_text: service of operations. not needed for batch upload
+        :param service_name: service of operations. not needed for batch upload
         :param is_label: bool. Label upload works slightly different
         :param method: method for uploads < 5k. standard is faster, but less powerful
         :param report_on_results: bool, whether batchjob should download results or not
@@ -257,16 +257,16 @@ class AdWords:
         if amount_operations == 0:
             return None
         elif method == "standard":
-            return self.__standard_upload(service_text, operations, is_debug, partial_failure, is_label)
+            return self.__standard_upload(service_name, operations, is_debug, partial_failure, is_label)
         else:
             return self.__batch_upload(operations, is_debug, report_on_results, batch_sleep_interval)
 
-    def __standard_upload(self, service_text, operations, is_debug, partial_failure, is_label):
+    def __standard_upload(self, service_name, operations, is_debug, partial_failure, is_label):
         """ Upload operations using the AdWords standard upload """
-        if service_text is None:
+        if service_name is None:
             raise IOError("Please provide the according service of the operations")
-        standard_uploader = AdWordsStandardUploader(self, is_debug, partial_failure)
-        return standard_uploader.execute(operations, service_text, is_label)
+        standard_uploader = StandardUploader(self, is_debug, partial_failure)
+        return standard_uploader.execute(operations, service_name, is_label)
 
     def __batch_upload(self, operations, is_debug, report_on_results, batch_sleep_interval):
         """ Uploads a batch of operations to adwords api using batch job service.
@@ -282,7 +282,7 @@ class AdWords:
             return None
 
         else:
-            batch_uploader = AdWordsBatchUploader(self)
+            batch_uploader = BatchUploader(self)
             batch_uploader.upload_operation(operations)
 
             # report on partial failures

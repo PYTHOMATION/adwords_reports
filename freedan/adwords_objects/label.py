@@ -1,7 +1,7 @@
 DEFAULT_TEMP_LABEL_ID = -999999
 
 
-class AdWordsLabel:
+class Label:
     """ AdWords service class for handling of labels (inside accounts). Those can be applied to
         - Campaigns
         - AdGroups
