@@ -204,7 +204,8 @@ def test_upload():
     from freedan import AdGroup, Label
     from freedan.adwords_services.standard_uploader import MAX_OPERATIONS_STANDARD_UPLOAD
 
-    ag_label = Label("ag_label_test", adwords_service, debug=False)  # not debug so it uses id used in test account
+    ag_label = Label("ag_label_test")
+    ag_label.update_id(adwords_service, is_debug=True)
     label_operations = [ag_label.apply_on_adgroup_operation(adgroup_id=adgroup1_id)]
     correct_operations = [AdGroup.set_name_operation(adgroup_id=adgroup1_id, new_name=adgroup1_name)]
     flawed_operations = [AdGroup.set_name_operation(adgroup_id=adgroup1_id+1, new_name=adgroup1_name)]
