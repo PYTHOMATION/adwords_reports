@@ -19,7 +19,7 @@ class BatchUploader:
     """
     def __init__(self, adwords_service, is_debug, report_on_results, batch_sleep_interval):
         self.adwords_service = adwords_service
-        self.batch_job_helper = adwords_service.batch_job_helper()
+        self.batch_job_helper = self.batch_job_helper()
         self.batch_job_service = adwords_service.init_service("BatchJobService")
         self.adwords_object = self.__add_batch_job()
         self.upload_url = self.adwords_object["uploadUrl"]["url"]
@@ -55,7 +55,7 @@ class BatchUploader:
 
             # report on partial failures
             if self.report_on_results:
-                return self.report_on_results(self.batch_sleep_interval)
+                return self.parse_response_when_ready(self.batch_sleep_interval)
             else:
                 return None
 
@@ -82,7 +82,7 @@ class BatchUploader:
         self.batch_job_helper.UploadOperations(self.upload_url, *operations)
         print(datetime.datetime.now(), "Upload finished...")
 
-    def report_on_results(self, batch_sleep_interval):
+    def parse_response_when_ready(self, batch_sleep_interval):
         """ Wait for results of batch upload and download them to report on errors """
         self.__get_batch_job_download_url_when_ready(batch_sleep_interval)
 

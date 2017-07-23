@@ -237,15 +237,15 @@ class AdWordsService:
             time.sleep(0.5)
         return results
 
-    def upload(self, operations, is_debug, partial_failure=True, service_name=None,
-               is_label=False, method="standard", report_on_results=True, batch_sleep_interval=-1):
+    def upload(self, operations, is_debug, method="standard", service_name=None, is_label=False,
+               partial_failure=True, report_on_results=True, batch_sleep_interval=-1):
         """ Taking care of all scenarios when operations need to be uploaded to AdWords.
         :param operations: list of operations
         :param is_debug: bool
-        :param partial_failure: bool
+        :param method: method for uploads < 5k. standard is faster, but less powerful
         :param service_name: service of operations. not needed for batch upload
         :param is_label: bool. Label upload works slightly different
-        :param method: method for uploads < 5k. standard is faster, but less powerful
+        :param partial_failure: bool
         :param report_on_results: bool, whether batchjob should download results or not
         :param batch_sleep_interval: int, -1 = exponential
         :return: reply of adwords API

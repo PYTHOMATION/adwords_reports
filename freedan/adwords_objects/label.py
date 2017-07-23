@@ -9,7 +9,6 @@ class Label:
     """
     def __init__(self, text, adwords_service, debug=True):
         """
-        
         :param text: str, text of the label (there's a maximum size, but I don't know it)
         :param adwords_service: AdWords object
         :param debug: bool

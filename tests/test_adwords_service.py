@@ -200,4 +200,41 @@ def test_download_objects():
 
 
 def test_upload():
-    pass
+    from tests import adwords_service
+    from freedan import AdGroup, Label
+    from freedan.adwords_services.standard_uploader import MAX_OPERATIONS_STANDARD_UPLOAD
+
+    ag_label = Label("ag_label_test", adwords_service, debug=False)  # not debug so it uses id used in test account
+    label_operations = [ag_label.apply_on_adgroup_operation(adgroup_id=47391167467)]
+    correct_operations = [AdGroup.set_name_operation(adgroup_id=47391167467, new_name="Ad Group #1")]
+    flawed_operations = [AdGroup.set_name_operation(adgroup_id=473911674664, new_name="Ad Group #1")]
+
+    # IOErrors
+    # missing service name
+    with pytest.raises(IOError):
+        adwords_service.upload(correct_operations, is_debug=True, method="standard")
+
+    # too many operations for standard upload
+    op_count = MAX_OPERATIONS_STANDARD_UPLOAD + 1
+    too_many_operations = [AdGroup.set_name_operation(adgroup_id=47391167467, new_name="Ad Group #1")] * op_count
+    with pytest.raises(IOError):
+        adwords_service.upload(too_many_operations, is_debug=True, method="standard", service_name="AdGroupService")
+
+    # correct operations
+    # normal behaviour | standard upload | debug
+    adwords_service.upload(correct_operations, is_debug=True, method="standard", service_name="AdGroupService")
+    adwords_service.upload(correct_operations, is_debug=True, method="batch")
+    adwords_service.upload(correct_operations, is_debug=False, method="standard", service_name="AdGroupService")
+    adwords_service.upload(
+        correct_operations, is_debug=False, method="batch", report_on_results=False, batch_sleep_interval=2)
+
+    # label operations
+    adwords_service.upload(
+        label_operations, is_debug=True, method="standard", service_name="AdGroupService", is_label=True)
+    adwords_service.upload(label_operations, is_debug=True, method="batch")
+    adwords_service.upload(label_operations, is_debug=True, method="standard", service_name="AdGroupService")
+
+    # flawed operations | standard | debug
+    adwords_service.upload(flawed_operations, is_debug=True, method="standard", service_name="AdGroupService")
+    adwords_service.upload(flawed_operations, is_debug=True, method="batch", report_on_results=True)
+    adwords_service.upload(flawed_operations, is_debug=False, method="standard", service_name="AdGroupService")
