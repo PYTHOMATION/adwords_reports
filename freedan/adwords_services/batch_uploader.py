@@ -19,17 +19,19 @@ class BatchUploader:
     """
     def __init__(self, adwords_service, is_debug, report_on_results, batch_sleep_interval):
         self.adwords_service = adwords_service
-        self.batch_job_helper = self.batch_job_helper()
         self.batch_job_service = adwords_service.init_service("BatchJobService")
-        self.adwords_object = self.__add_batch_job()
-        self.upload_url = self.adwords_object["uploadUrl"]["url"]
-        self.id = self.adwords_object["id"]
-        self.status = None
-        self.download_url = None
+        self.batch_job_helper = self.batch_job_helper()
 
         self.is_debug = is_debug
         self.report_on_results = report_on_results
         self.batch_sleep_interval = batch_sleep_interval
+
+        self.batch_job = self._add_batch_job()
+        # # memo for important attributes of batch job
+        # batch_job.uploadUrl.url
+        # batch_job.id
+        # batch_job.status
+        # batch_job.downloadUrl.url
 
     @ErrorRetryer()
     def batch_job_helper(self):
@@ -39,6 +41,15 @@ class BatchUploader:
         api_version = self.adwords_service.api_version
         return client.GetBatchJobHelper(version=api_version)
 
+    @ErrorRetryer()
+    def _add_batch_job(self):
+        """ Adding a new BatchJob """
+        batch_job_operations = [{
+            'operand': {},
+            'operator': 'ADD'
+        }]
+        return self.batch_job_service.mutate(batch_job_operations)['value'][0]
+
     def execute(self, operations):
         """ Uploads a batch of operations to adwords api using batch job service.
         :param operations: tuple of lists of operations
@@ -47,82 +58,40 @@ class BatchUploader:
         print("Uploading operations using batchjob")
         print("##### OperationUpload is LIVE: {is_live}. #####".format(is_live=(not self.is_debug)))
 
-        if self.is_debug:
-            print("Operations not uploaded due to debug. BatchUpload doesn't support validate only header...")
-            return None
-        else:
-            self.upload(operations)
+        if not self.is_debug:
+            self._upload(operations)
 
-            # report on partial failures
             if self.report_on_results:
-                return self.parse_response_when_ready(self.batch_sleep_interval)
-            else:
-                return None
-
-    @staticmethod
-    def fillna_with_temp_id(batchjob_helper, adwords_id):
-        """ If id is np.nan, return new temporary id (negative int), else return the id"""
-        if pd.isnull(adwords_id):
-            return int(batchjob_helper.GetId())
-        return adwords_id
+                self._get_batch_job_download_url_when_ready(self.batch_sleep_interval)
+                raw_response = self._read_response()
+                errors = self._parse_partial_failures(raw_response)
+                return raw_response, errors
+        else:
+            print("Operations couldn't be validated since AdWords' BatchUpload doesn't support validate only header")
+        return None
 
     @ErrorRetryer()
-    def __add_batch_job(self):
-        """ Adding a new BatchJob """
-        batch_job_operations = [{
-            'operand': {},
-            'operator': 'ADD'
-        }]
-        return self.batch_job_service.mutate(batch_job_operations)['value'][0]
-
-    @ErrorRetryer()
-    def upload(self, operations):
+    def _upload(self, operations):
         """ Upload operations """
         print(datetime.datetime.now(), "Upload started...")
-        self.batch_job_helper.UploadOperations(self.upload_url, *operations)
+        self.batch_job_helper.UploadOperations(self.batch_job.uploadUrl.url, *operations)
         print(datetime.datetime.now(), "Upload finished...")
 
-    def parse_response_when_ready(self, batch_sleep_interval):
-        """ Wait for results of batch upload and download them to report on errors """
-        self.__get_batch_job_download_url_when_ready(batch_sleep_interval)
-
-        response_xml = urlopen(self.download_url).read()
-        raw_response = self.batch_job_helper.ParseResponse(response_xml)
-        errors = self.__report_on_partial_errors(raw_response)
-        return raw_response, errors
-
     @ErrorRetryer()
-    def __get_batch_job_download_url_when_ready(self, batch_sleep_interval):
+    def _get_batch_job_download_url_when_ready(self, batch_sleep_interval):
         """ Attempts to fetch BatchJob download url multiple times. Sleeps for x seconds in between attempts """
-        self.__update_attributes()
+        self._update_attributes()
         poll_attempt = 0  # needed for sleep duration calculation
-        while self.status in PENDING_STATUSES:
-            self.sleep_if_not_ready(poll_attempt, batch_sleep_interval)
-            self.__update_attributes()
+        while self.batch_job.status in PENDING_STATUSES:
+            self._sleep_if_not_ready(poll_attempt, batch_sleep_interval)
+            self._update_attributes()
             poll_attempt += 1
 
-            if self.download_url is not None:
-                return self.download_url
-
-    @ErrorRetryer()
-    def __update_attributes(self):
-        """ Get existing BatchJob by id. Including download url """
-        selector = {
-            'fields': ['Id', 'Status', 'DownloadUrl'],
-            'predicates': [{
-                'field': 'Id',
-                'operator': 'EQUALS',
-                'values': [self.id]
-            }]
-        }
-        batch_job = self.batch_job_service.get(selector)['entries'][0]
-        self.adwords_object = batch_job
-        self.id = batch_job["id"]
-        self.status = batch_job["status"] if "status" in batch_job else None
-        self.download_url = batch_job["downloadUrl"]["url"] if "downloadUrl" in batch_job else None
+            if "downloadUrl" in self.batch_job:
+                return self.batch_job.downloadUrl.url
 
     @staticmethod
-    def sleep_if_not_ready(poll_attempt, batch_sleep_interval):
+    def _sleep_if_not_ready(poll_attempt, batch_sleep_interval):
         """ Determine sleep interval for batch job """
         exponential = min(300, 30 * 2**poll_attempt)
         seconds = exponential if batch_sleep_interval == -1 else batch_sleep_interval
@@ -132,8 +101,26 @@ class BatchUploader:
               "Sleeping for {s} seconds (~{m} minutes).".format(s=seconds, m=minutes))
         time.sleep(seconds)
 
+    @ErrorRetryer()
+    def _update_attributes(self):
+        """ Get existing BatchJob by id. Including download url """
+        selector = {
+            'fields': ['Id', 'Status', 'DownloadUrl'],
+            'predicates': [{
+                'field': 'Id',
+                'operator': 'EQUALS',
+                'values': [self.batch_job.id]
+            }]
+        }
+        self.batch_job = self.batch_job_service.get(selector)['entries'][0]
+
+    def _read_response(self):
+        """ Wait for results of batch upload and download them to report on errors """
+        response_xml = urlopen(self.batch_job.downloadUrl.url).read()
+        return self.batch_job_helper.ParseResponse(response_xml)
+
     @staticmethod
-    def __report_on_partial_errors(response):
+    def _parse_partial_failures(response):
         """ Parses the XML response of the BatchJob and reports on errors. """
         error_summary = collections.defaultdict(set)
         all_errors = list()
@@ -157,8 +144,10 @@ class BatchUploader:
 
                         error_summary[error.sub_type].add(index)  # count on how many operations an error type occurred
 
-        error_message = "\n".join(all_error_texts) or "All operations successfully uploaded."
-        print(error_message)
+        if all_error_texts:
+            print("\n".join(all_error_texts))
+        else:
+            print("All operations successfully uploaded.")
 
         if error_summary:
             summary_message = "\n".join(["{type}: {count}".format(type=sub_type, count=len(indexes))
@@ -166,3 +155,10 @@ class BatchUploader:
             print("\nSummary:")
             print(summary_message)
         return all_errors
+
+    @staticmethod
+    def fillna_with_temp_id(batchjob_helper, nan_or_id):
+        """ If id is np.nan, return new temporary id (negative int), else return the id"""
+        if pd.isnull(nan_or_id):
+            return int(batchjob_helper.GetId())
+        return nan_or_id
