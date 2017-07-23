@@ -24,6 +24,9 @@ class ExtendedTextAd:
         else:
             self.final_url = final_url.replace("https://", "http://")
 
+        # validate if ad could be uploaded to adwords
+        self.basic_checks()
+
     @staticmethod
     def clean_paths(path1, path2):
         """ Remove punctuation and spaces from paths """
@@ -66,8 +69,6 @@ class ExtendedTextAd:
         """ Ad add operation for AdWords API.
         Only working for ETA since Standard Text Ads were deprecated in early 2017
         """
-        self.basic_checks()
-
         operation = {
             "xsi_type": "AdGroupAdOperation",
             "operator": "ADD",

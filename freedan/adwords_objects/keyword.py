@@ -22,6 +22,7 @@ class Keyword:
         assert self.match_type in ("EXACT", "PHRASE", "BROAD")
         if not isinstance(self.final_url, KeywordFinalUrl):
             raise ValueError("Please pass a KeywordFinalUrl object in parameter final_url.")
+        self.basic_checks()
 
     @staticmethod
     def is_real_broad(broad_text):
@@ -45,7 +46,6 @@ class Keyword:
     def add_operation(self, adgroup_id, status="ENABLED", label_id=None):
         """ Add keyword to adgroup operation for adwords API """
         assert self.max_cpc >= 10000  # i.e. at least 1 cent
-        self.basic_checks()
 
         operation = {
             "xsi_type": "AdGroupCriterionOperation",

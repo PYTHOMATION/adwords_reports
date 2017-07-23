@@ -94,33 +94,34 @@ def test_eta():
     assert not good_eta.too_long()
 
     # path2 but no path1
-    path1_missing_eta = ExtendedTextAd("a", "b", "c", "", "e f", "http://asd.ca")
     with pytest.raises(AssertionError):
-        path1_missing_eta.basic_checks()
+        ExtendedTextAd("a", "b", "c", "", "e f", "http://asd.ca")
 
     # too long etas
     chars31 = "a" * 31
     chars81 = "a" * 81
     chars16 = "a" * 16
-    hl1_too_long_eta = ExtendedTextAd(chars31, "b", "c", "e", "f", "http://asd.ca")
-    hl2_too_long_eta = ExtendedTextAd("a", chars31, "c", "e", "f", "http://asd.ca")
-    desc_too_long_eta = ExtendedTextAd("a", "b", chars81, "e", "f", "http://asd.ca")
-    p1_too_long_eta = ExtendedTextAd("a", "b", "c", chars16, "f", "http://asd.ca")
-    p2_too_long_eta = ExtendedTextAd("a", "b", "d", "e", chars16, "http://asd.ca")
+    with pytest.raises(AssertionError):
+        ExtendedTextAd(chars31, "b", "c", "e", "f", "http://asd.ca")
 
-    assert hl1_too_long_eta.too_long()
-    assert hl2_too_long_eta.too_long()
-    assert desc_too_long_eta.too_long()
-    assert p1_too_long_eta.too_long()
-    assert p2_too_long_eta.too_long()
+    with pytest.raises(AssertionError):
+        ExtendedTextAd("a", chars31, "c", "e", "f", "http://asd.ca")
+
+    with pytest.raises(AssertionError):
+        ExtendedTextAd("a", "b", chars81, "e", "f", "http://asd.ca")
+
+    with pytest.raises(AssertionError):
+        ExtendedTextAd("a", "b", "c", chars16, "f", "http://asd.ca")
+
+    with pytest.raises(AssertionError):
+        ExtendedTextAd("a", "b", "d", "e", chars16, "http://asd.ca")
 
     # missing protocol in url
-    missing_protocol_eta = ExtendedTextAd("a", "b", "d", "e", chars16, "asd.ca")
     with pytest.raises(AssertionError):
-        missing_protocol_eta.basic_checks()
+        ExtendedTextAd("a", "b", "d", "e", chars16, "asd.ca")
 
     # http url
-    http_eta = ExtendedTextAd("a", "b", "d", "e", chars16, "https://asd.ca", https=False)
+    http_eta = ExtendedTextAd("a", "b", "d", "e", "f", "https://asd.ca", https=False)
     assert http_eta.final_url == "http://asd.ca"
 
 
@@ -155,12 +156,12 @@ def test_keyword():
 
     # too many words
     with pytest.raises(AssertionError):
-        Keyword("1 2 3 4 5 6 7 8 9 10 11", "Exact", 1, good_url).basic_checks()
+        Keyword("1 2 3 4 5 6 7 8 9 10 11", "Exact", 1, good_url)
 
     # too long kw
     with pytest.raises(AssertionError):
         kw_text = "a" * 81
-        Keyword(kw_text, "Exact", 1, good_url).basic_checks()
+        Keyword(kw_text, "Exact", 1, good_url)
 
     # broad vs broad modified
     assert Keyword.is_real_broad("asd")
@@ -183,4 +184,4 @@ def test_shared_set_overview():
     from freedan import SharedSetOverview
 
     shared_set = SharedSetOverview(adwords_service)
-    assert isinstance(shared_set, pd.DataFrame)
+    assert isinstance(shared_set.overview, pd.DataFrame)
