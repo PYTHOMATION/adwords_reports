@@ -14,3 +14,5 @@ def test_close_variant():
     assert TextHandler.remove_double_white_space("    qweq asd  qqr") == "qweq asd qqr"
     assert TextHandler.remove_punctuation("madrid a gasteiz / vitoria") == "madrid a gasteiz vitoria"
     assert TextHandler.remove_forbidden_adwords_chars("madrid a gasteiz / vitoria") == "madrid a gasteiz / vitoria"
+
+

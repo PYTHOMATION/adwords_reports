@@ -17,14 +17,11 @@ class Keyword:
         self.text = text.lower()
         self.match_type = match_type.upper()
         self.max_cpc = AdWordsService.euro_to_micro(max_cpc) if convert_to_micro else max_cpc
+        self.final_url = final_url
 
-        if isinstance(final_url, str):
-            self.final_url = final_url
-        elif isinstance(final_url, KeywordFinalUrl):
-            self.final_url = final_url.final_url
-        else:
-            raise ValueError("Unexpected value for final url. Please provide string or KeywordFinalUrl object.")
         assert self.match_type in ("EXACT", "PHRASE", "BROAD")
+        if not isinstance(self.final_url, KeywordFinalUrl):
+            raise ValueError("Please pass a KeywordFinalUrl object in parameter final_url.")
 
     @staticmethod
     def is_real_broad(broad_text):
@@ -63,7 +60,7 @@ class Keyword:
                     "matchType": self.match_type
                 },
                 "finalUrls": {
-                    "urls": [self.final_url]
+                    "urls": [self.final_url.url]
                 },
                 "biddingStrategyConfiguration": {
                     "bids": [

@@ -9,10 +9,10 @@ class SharedSetOverview:
     Those ids are normally used in other campaign operations later on. 
     """
     def __init__(self, adwords_service, set_types=DEFAULT_TYPES):
-        self.overview = self.download_overview(adwords_service, set_types)
+        self.overview = self._download_overview(adwords_service, set_types)
 
     @staticmethod
-    def download_overview(adwords_service, set_types):
+    def _download_overview(adwords_service, set_types):
         """ Query an overview of shared sets from AdWords API.
         :param adwords_service: AdWords object
         :param set_types: list of str, e.g. negative keywords, negative placements, ...

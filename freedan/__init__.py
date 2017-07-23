@@ -25,5 +25,4 @@ from freedan.adwords_services.standard_uploader import StandardUploader
 from freedan.adwords_services.adwords_error import AdWordsError
 from freedan.adwords_services.report_helper import ReportHelper
 
-from freedan.other_services.error_retryer import ErrorRetryer
 from freedan.other_services.text_handler import TextHandler

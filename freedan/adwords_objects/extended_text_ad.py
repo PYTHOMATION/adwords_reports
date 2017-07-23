@@ -9,15 +9,20 @@ MAX_CHARS_PATH2 = 15
 
 class ExtendedTextAd:
     """ Common functionality needed for Ad creation/validation/deletion/etc. """
-    def __init__(self, headline1, headline2, description, path1, path2, final_url):
-        path1, path2 = self.clean_paths(path1, path2)
-
+    def __init__(self, headline1, headline2, description, path1, path2, final_url, https=True):
         self.headline1 = headline1
         self.headline2 = headline2
         self.description = description
+
+        path1, path2 = self.clean_paths(path1, path2)
         self.path1 = path1
         self.path2 = path2
-        self.final_url = final_url
+
+        self.https = https
+        if self.https:
+            self.final_url = final_url.replace("http://", "https://")
+        else:
+            self.final_url = final_url.replace("https://", "http://")
 
     @staticmethod
     def clean_paths(path1, path2):
@@ -51,7 +56,10 @@ class ExtendedTextAd:
         assert self.description
         assert self.path1 if self.path2 else True
         assert all(" " not in path for path in [self.path1, self.path2])  # no spaces in path
-        assert "https://" in self.final_url
+        if self.https:
+            assert "https://" in self.final_url
+        else:
+            assert "http://" in self.final_url
         assert not self.too_long()
 
     def add_operation(self, adgroup_id, status="ENABLED"):
