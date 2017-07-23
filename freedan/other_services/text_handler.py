@@ -15,8 +15,9 @@ class TextHandler:
         self.text = text
         self.without_punctuation = self.without_dashes_and_punctuation(text)
         self.decoded = self.decode(text)
-        self.standardized = self.without_dashes_and_punctuation(self.decoded)
+        self.standardized = self.standardize(text)
         self.variations = {self.text, self.decoded, self.without_punctuation, self.standardized}
+        # variations might be useful for negative keywords since it's a useful small subset of close variant matches
 
     @staticmethod
     def decode(text):
