@@ -84,26 +84,6 @@ class AdWordsService:
         service_object = self.init_service(service)
         return service_object.get(selector)
 
-    def accounts(self, predicates=None, skip_mccs=True, convert=True):
-        """ Generator yielding accounts + business info ordered by account name
-        :param predicates:
-        :param skip_mccs:
-        :param convert: bool, convert to SearchAccount object
-        :return: generator yielding dicts with core information of accounts
-        """
-        account_selector = self._account_selector(predicates, skip_mccs)
-        account_page = self._get_page(account_selector, "ManagedCustomerService")
-        if "entries" not in account_page:
-            raise LookupError("Nothing matches the selector.")
-
-        for ad_account in account_page["entries"]:
-            self.client.SetClientCustomerId(ad_account.customerId)  # select account
-
-            if convert:
-                yield Account.from_ad_account(ad_account=ad_account)
-            else:
-                yield ad_account
-
     @staticmethod
     def _account_selector(predicates, skip_mccs):
         account_selector = {
@@ -132,19 +112,41 @@ class AdWordsService:
                 account_selector["predicates"] = [skip_mcc_predicate]
         return account_selector
 
+    def accounts(self, predicates=None, skip_mccs=True, convert=True):
+        """ Generator yielding accounts + business info ordered by account name
+        :param predicates:
+        :param skip_mccs:
+        :param convert: bool, convert to SearchAccount object
+        :return: generator yielding dicts with core information of accounts
+        """
+        account_selector = self._account_selector(predicates, skip_mccs)
+        account_page = self._get_page(account_selector, "ManagedCustomerService")
+        if "entries" not in account_page:
+            raise LookupError("Nothing matches the selector.")
+
+        for ad_account in account_page["entries"]:
+            self.client.SetClientCustomerId(ad_account.customerId)  # select account
+
+            if convert:
+                yield Account.from_ad_account(ad_account=ad_account)
+            else:
+                yield ad_account
+
     @staticmethod
-    def report_definition(report_type, fields, predicates=None, last_days=None, date_min=None, date_max=None):
+    def report_definition(report_type, fields, predicates=None,
+                          last_days=None, date_min=None, date_max=None, report_name="name"):
         """ Create report definition as needed in api call from meta information
         If date range isn't specified, last_days will be set to 7
         :param report_type: str, https://developers.google.com/adwords/api/docs/appendix/reports
         :param fields: list of str
+        :param predicates: list of dicts
         :param last_days: int, date_max = yesterday and date_min = today - days_ago
                               not compatible with date_min/date_max
         :param date_min: str, format YYYYMMDD or YYYY-MM-DD
                               not compatible with date_min/date_max
         :param date_max: str, format YYYYMMDD or YYYY-MM-DD
                               not compatible with date_min/date_max
-        :param predicates: list of dicts
+        :param report_name: str, name of report - will be available in UI
         """
         dates_are_relative = last_days is not None
         dates_are_absolute = date_min is not None or date_max is not None
@@ -169,7 +171,7 @@ class AdWordsService:
             .replace(" ", "_")
 
         report_def = {
-            "reportName": "name",
+            "reportName": report_name,
             "dateRangeType": "CUSTOM_DATE",
             "reportType": report_type,
             "downloadFormat": "CSV",
@@ -200,11 +202,11 @@ class AdWordsService:
         report = pd.read_csv(data, names=header)
         return report
 
-    def download_objects(self, service, fields=("Id", ), predicates=None):
+    def download_objects(self, service_name, fields=("Id",), predicates=None):
         """ Downloads adwords objects the classical way
         CAUTION: Only use this, when necessary i.e. if there's no report type available containing this information
         For instance campaign language targetings are a use case for that
-        :param service: str, identifying adwords service that's associated with those objects
+        :param service_name: str, identifying adwords service that's associated with those objects
         :param fields: list of str
         :param predicates: list of dicts
         :return: list of objects
@@ -219,11 +221,11 @@ class AdWordsService:
             }
         }
         if predicates is not None:
-            request["request"] = predicates
+            request["predicates"] = predicates
 
         results = list()
         while more_pages:
-            page = self._get_page(request, service)
+            page = self._get_page(request, service_name)
             if 'entries' not in page:
                 raise LookupError("Nothing matches the selector.")
 
@@ -235,8 +237,8 @@ class AdWordsService:
             time.sleep(0.5)
         return results
 
-    def upload(self, operations, is_debug, partial_failure=True, service_name=None, is_label=False, method="standard",
-               report_on_results=True, batch_sleep_interval=-1):
+    def upload(self, operations, is_debug, partial_failure=True, service_name=None,
+               is_label=False, method="standard", report_on_results=True, batch_sleep_interval=-1):
         """ Taking care of all scenarios when operations need to be uploaded to AdWords.
         :param operations: list of operations
         :param is_debug: bool
@@ -246,7 +248,7 @@ class AdWordsService:
         :param method: method for uploads < 5k. standard is faster, but less powerful
         :param report_on_results: bool, whether batchjob should download results or not
         :param batch_sleep_interval: int, -1 = exponential
-        :return:
+        :return: reply of adwords API
         """
         assert isinstance(operations, (list, tuple))
         if method == "batch" and isinstance(operations, list):
@@ -263,8 +265,8 @@ class AdWordsService:
             return standard_uploader.execute(operations, service_name, is_label)
 
         elif method == "batch":
-            batch_uploader = BatchUploader(self, ...)
-            return batch_uploader.execute()
+            batch_uploader = BatchUploader(self, is_debug, report_on_results, batch_sleep_interval)
+            return batch_uploader.execute(operations)
 
         else:
             raise IOError("method must be 'standard' or 'batch'.")
