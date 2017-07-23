@@ -55,7 +55,7 @@ class TextHandler:
         type_of_input = type(iterable)
         if isinstance(iterable, str):
             new_text = iterable.translate({ord(c): None for c in forbidden_chars})
-            return TextHandler.remove_double_space(new_text)
+            return TextHandler.remove_double_white_space(new_text)
         elif isinstance(iterable, (set, list, tuple)):
             return type_of_input([TextHandler.remove_punctuation(elem, forbidden_chars=forbidden_chars)
                                   for elem in iterable])

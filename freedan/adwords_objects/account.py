@@ -21,7 +21,9 @@ class Account:
         """
         labels = list()
         if "accountLabels" in ad_account:
-            labels = [AccountLabel.from_adwords_account_label(v) for v in ad_account.accountLabels]
+            for adwords_label in ad_account.accountLabels:
+                label = AccountLabel.from_adwords_account_label(adwords_label)
+                labels.append(label)
 
         return cls(ad_account=ad_account, account_id=ad_account.customerId, name=ad_account.name,
                    is_mcc=ad_account.canManageClients, currency=ad_account.currencyCode,
@@ -30,7 +32,8 @@ class Account:
     @classmethod
     def from_name(cls, name):
         """ Construct object only from name """
-        return cls(ad_account=None, account_id=None, name=name)
+        return cls(ad_account=None, account_id=None, name=name, is_mcc=None,
+                   currency=None, time_zone=None, is_test=None, labels=None)
 
     def __repr__(self):
         """ user friendly readable string representation """
