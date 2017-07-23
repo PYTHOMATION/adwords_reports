@@ -107,3 +107,19 @@ def test_account_iterator():
         # hack but I couldn't import the class. please fix if you can
         assert str(type(account)) == "<class 'suds.sudsobject.ManagedCustomer'>"
         assert account.name == "Dont touch - !ImportantAccountForTests!"
+
+
+def test_report_definition():
+    pass
+
+
+def test_download_report():
+    pass
+
+
+def test_download_objects():
+    pass
+
+
+def test_upload():
+    pass

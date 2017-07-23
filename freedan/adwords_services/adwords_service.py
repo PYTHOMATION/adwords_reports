@@ -263,35 +263,8 @@ class AdWordsService:
             return standard_uploader.execute(operations, service_name, is_label)
 
         elif method == "batch":
-            return self.__batch_upload(operations, is_debug, report_on_results, batch_sleep_interval)
+            batch_uploader = BatchUploader(self, ...)
+            return batch_uploader.execute()
+
         else:
             raise IOError("method must be 'standard' or 'batch'.")
-
-    def __batch_upload(self, operations, is_debug, report_on_results, batch_sleep_interval):
-        """ Uploads a batch of operations to adwords api using batch job service.
-        :param operations: tuple of lists of operations
-        :param report_on_results: bool, specifies whether one should download results or not. Skipping speeds up execution
-        :param batch_sleep_interval: int, sleeping time between checks on results. -1: using exponential time
-        :return: return value of adwords
-        """
-        print("Uploading operations using batchjob")
-        print("##### OperationUpload is LIVE: {is_live}. #####".format(is_live=(not is_debug)))
-        if is_debug:
-            print("Operations not uploaded due to debug. BatchUpload doesn't support validate only header...")
-            return None
-
-        else:
-            batch_uploader = BatchUploader(self)
-            batch_uploader.upload_operation(operations)
-
-            # report on partial failures
-            if report_on_results:
-                return batch_uploader.report_on_results(batch_sleep_interval)
-            else:
-                return None
-
-    @ErrorRetryer()
-    def batch_job_helper(self):
-        """ Get an AdWords BatchJobHelper object
-        E.g. for temporary ids """
-        return self.client.GetBatchJobHelper(version=self.api_version)

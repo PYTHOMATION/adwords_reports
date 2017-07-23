@@ -15,11 +15,10 @@ PENDING_STATUSES = ('ACTIVE', 'AWAITING_FILE', 'CANCELING')
 class BatchUploader:
     """ AdWords service class that handles
         - batch uploads
-        - and the related error handling """
-    def __init__(self, adwords_service):
-        """
-        :param adwords_service: AdWords object 
-        """
+        - and the related error handling
+    """
+    def __init__(self, adwords_service, is_debug, report_on_results, batch_sleep_interval):
+        self.adwords_service = adwords_service
         self.batch_job_helper = adwords_service.batch_job_helper()
         self.batch_job_service = adwords_service.init_service("BatchJobService")
         self.adwords_object = self.__add_batch_job()
@@ -27,6 +26,38 @@ class BatchUploader:
         self.id = self.adwords_object["id"]
         self.status = None
         self.download_url = None
+
+        self.is_debug = is_debug
+        self.report_on_results = report_on_results
+        self.batch_sleep_interval = batch_sleep_interval
+
+    @ErrorRetryer()
+    def batch_job_helper(self):
+        """ Get an AdWords BatchJobHelper object
+        E.g. for temporary ids """
+        client = self.adwords_service.client
+        api_version = self.adwords_service.api_version
+        return client.GetBatchJobHelper(version=api_version)
+
+    def execute(self, operations):
+        """ Uploads a batch of operations to adwords api using batch job service.
+        :param operations: tuple of lists of operations
+        :return: return value of adwords
+        """
+        print("Uploading operations using batchjob")
+        print("##### OperationUpload is LIVE: {is_live}. #####".format(is_live=(not self.is_debug)))
+
+        if self.is_debug:
+            print("Operations not uploaded due to debug. BatchUpload doesn't support validate only header...")
+            return None
+        else:
+            self.upload(operations)
+
+            # report on partial failures
+            if self.report_on_results:
+                return self.report_on_results(self.batch_sleep_interval)
+            else:
+                return None
 
     @staticmethod
     def fillna_with_temp_id(batchjob_helper, adwords_id):
@@ -45,7 +76,7 @@ class BatchUploader:
         return self.batch_job_service.mutate(batch_job_operations)['value'][0]
 
     @ErrorRetryer()
-    def upload_operation(self, operations):
+    def upload(self, operations):
         """ Upload operations """
         print(datetime.datetime.now(), "Upload started...")
         self.batch_job_helper.UploadOperations(self.upload_url, *operations)
