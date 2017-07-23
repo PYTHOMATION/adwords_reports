@@ -1,8 +1,10 @@
-from freedan.adwords_services.adwords import AdWords
+import os
+from freedan.adwords_services.adwords_service import AdWordsService
 
-adwords_test_credentials = "adwords_test_credentials.yaml"
+test_dir = os.path.dirname(__file__)
+adwords_test_credentials = os.path.join(test_dir, "adwords_test_credentials.yaml")
 
-adwords_service = AdWords(adwords_test_credentials)
+adwords_service = AdWordsService(adwords_test_credentials)
 
 
 def service_suds_client(service_name):

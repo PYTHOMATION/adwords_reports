@@ -1,13 +1,13 @@
 import uuid
 
-from freedan.adwords_services.adwords import AdWords
+from freedan.adwords_services.adwords_service import AdWordsService
 
 
 class CampaignBudget:
     """ CampaignBudget. A budget is mandatory when creating a new campaign """
     def __init__(self, budget_id, amount, amount_in_euro, name=None):
         self.id = budget_id
-        self.amount = AdWords.euro_to_micro(amount) if amount_in_euro else amount
+        self.amount = AdWordsService.euro_to_micro(amount) if amount_in_euro else amount
         self.name = name or 'API Budget #{uuid}'.format(uuid=uuid.uuid4().int)
         assert self.amount >= 10000  # i.e. >= 1 cent
 

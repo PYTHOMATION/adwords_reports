@@ -18,6 +18,8 @@ class StandardUploader:
         """ Uploads a list of operations to adwords api using standard mutate service.
         :return: response from adwords API
         """
+        if service_name is None:
+            raise IOError("Please provide the according service of the operations")
         service = self.adwords_service.init_service(service_name)
 
         self.client.partial_failure = self.partial_failure

@@ -1,7 +1,7 @@
 import itertools
 import pandas as pd
 
-from freedan.adwords_services.adwords import AdWords
+from freedan.adwords_services.adwords_service import AdWordsService
 
 SPECIAL_FLOATS = (pd.np.inf, -pd.np.inf, pd.np.nan)
 
@@ -78,7 +78,7 @@ class ReportNormaliser:
     def __micro_to_float(micro_amount, default_value=-1.00):
         """ Convert micro amounts to regular euro with default value if unexpected value occurs """
         try:
-            return AdWords.micro_to_euro(micro_amount)
+            return AdWordsService.micro_to_euro(micro_amount)
         except ValueError:
             return default_value
 

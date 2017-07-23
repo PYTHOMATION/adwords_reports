@@ -1,5 +1,5 @@
-from freedan.adwords_services.adwords import AdWords
-from freedan.adwords_services.adwords import DEVICE_TO_ID
+from freedan.adwords_services.adwords_service import AdWordsService
+from freedan.adwords_services.adwords_service import DEVICE_TO_ID
 
 
 class AdGroup:
@@ -91,7 +91,7 @@ class AdGroup:
     def set_bid_operation(adgroup_id, max_cpc, convert_to_micro=True):
         """ Operation to change the bid of an AdGroup """
         if convert_to_micro:
-            max_cpc = AdWords.euro_to_micro(max_cpc)
+            max_cpc = AdWordsService.euro_to_micro(max_cpc)
 
         operation = {
             "xsi_type": "AdGroupOperation",

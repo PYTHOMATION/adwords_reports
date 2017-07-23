@@ -24,7 +24,7 @@ DEVICE_TO_ID = {  # Internal ids of AdWords for different platforms
 PAGE_SIZE = 5000  # Recommended paging size by AdWords
 
 
-class AdWords:
+class AdWordsService:
     """ AdWords Service class that handles interactions with AdWords API. Most important functionality:
         - Initiate API connection using credentials
         - Generator for accounts matching the account selector in project _config
@@ -47,6 +47,7 @@ class AdWords:
         """ Convert a number to an micro amount:
             - times one million
             - and rounded to multiples of 10k """
+        assert isinstance(number, (float, int))
         return int(round(float(number) * MICRO_FACTOR, -4))
 
     @staticmethod
@@ -54,6 +55,7 @@ class AdWords:
         """ Convert micro amount to regular euro amount
             - divided by one million
             - and rounded to 2 fractional digits """
+        assert isinstance(number, int)
         return round(float(number) / MICRO_FACTOR, 2)
 
     @ErrorRetryer()
@@ -62,15 +64,15 @@ class AdWords:
         return adwords.AdWordsClient.LoadFromStorage(self.credentials_path)
 
     @ErrorRetryer()
-    def init_service(self, service_string):
+    def init_service(self, service_name):
         """ Initiates the adwords services or report downloader """
         if self.client is None:
             raise ConnectionError("Please initiate API connection first using .initiate_api_connection()")
 
-        if service_string == "ReportDownloader":
+        if service_name == "ReportDownloader":
             return self.client.GetReportDownloader(version=self.api_version)
         else:
-            return self.client.GetService(service_string, version=self.api_version)
+            return self.client.GetService(service_name, version=self.api_version)
 
     @ErrorRetryer()
     def _get_page(self, selector, service):
@@ -246,7 +248,6 @@ class AdWords:
         :param batch_sleep_interval: int, -1 = exponential
         :return:
         """
-        assert method in ["standard", "batch"]
         assert isinstance(operations, (list, tuple))
         if method == "batch" and isinstance(operations, list):
             operations = (operations, )
@@ -256,17 +257,15 @@ class AdWords:
 
         if amount_operations == 0:
             return None
-        elif method == "standard":
-            return self.__standard_upload(service_name, operations, is_debug, partial_failure, is_label)
-        else:
-            return self.__batch_upload(operations, is_debug, report_on_results, batch_sleep_interval)
 
-    def __standard_upload(self, service_name, operations, is_debug, partial_failure, is_label):
-        """ Upload operations using the AdWords standard upload """
-        if service_name is None:
-            raise IOError("Please provide the according service of the operations")
-        standard_uploader = StandardUploader(self, is_debug, partial_failure)
-        return standard_uploader.execute(operations, service_name, is_label)
+        elif method == "standard":
+            standard_uploader = StandardUploader(self, is_debug, partial_failure)
+            return standard_uploader.execute(operations, service_name, is_label)
+
+        elif method == "batch":
+            return self.__batch_upload(operations, is_debug, report_on_results, batch_sleep_interval)
+        else:
+            raise IOError("method must be 'standard' or 'batch'.")
 
     def __batch_upload(self, operations, is_debug, report_on_results, batch_sleep_interval):
         """ Uploads a batch of operations to adwords api using batch job service.

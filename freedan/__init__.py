@@ -19,7 +19,7 @@ from freedan.adwords_objects.label import Label
 from freedan.adwords_objects.extended_text_ad import ExtendedTextAd
 from freedan.adwords_objects.shared_set_overview import SharedSetOverview
 
-from freedan.adwords_services.adwords import AdWords
+from freedan.adwords_services.adwords_service import AdWordsService
 from freedan.adwords_services.batch_uploader import BatchUploader
 from freedan.adwords_services.standard_uploader import StandardUploader
 from freedan.adwords_services.adwords_error import AdWordsError

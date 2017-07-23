@@ -1,4 +1,4 @@
-from freedan.adwords_services.adwords import AdWords
+from freedan.adwords_services.adwords_service import AdWordsService
 from freedan.adwords_objects.keyword_final_url import KeywordFinalUrl
 
 MAX_WORDS_KEYWORD = 10
@@ -16,7 +16,7 @@ class Keyword:
     def __init__(self, text, match_type, max_cpc, final_url, convert_to_micro=True):
         self.text = text.lower()
         self.match_type = match_type.upper()
-        self.max_cpc = AdWords.euro_to_micro(max_cpc) if convert_to_micro else max_cpc
+        self.max_cpc = AdWordsService.euro_to_micro(max_cpc) if convert_to_micro else max_cpc
 
         if isinstance(final_url, str):
             self.final_url = final_url
@@ -103,7 +103,7 @@ class Keyword:
     @staticmethod
     def set_bid(adgroup_id, keyword_id, bid, convert_to_micro=True):
         if convert_to_micro:
-            bid = AdWords.euro_to_micro(bid)
+            bid = AdWordsService.euro_to_micro(bid)
 
         operation = {
             "xsi_type": "AdGroupCriterionOperation",
