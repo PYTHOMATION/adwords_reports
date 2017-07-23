@@ -1,9 +1,7 @@
 class AdWordsError:
     """ AdWords service class that takes care of elegant error handling. """
     def __init__(self, index, error_type, trigger, sub_type, field_path, reason,
-                 policy_name, policy_violating_text,
-                 feed_name, feed_attribute_name):
-        """ Normally just created from adwords internal error object """
+                 policy_name, policy_violating_text, feed_name, feed_attribute_name):
         self.index = index  # to trace back the operation
 
         self.type = error_type
@@ -28,6 +26,9 @@ class AdWordsError:
         :return: AdWordsError instance
         """
         index = int(index)
+        print(index)
+        print(adwords_error)
+        print("*" * 130)
 
         # mandatory fields
         error_type = adwords_error["ApiError.Type"]

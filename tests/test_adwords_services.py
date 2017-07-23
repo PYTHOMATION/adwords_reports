@@ -238,3 +238,26 @@ def test_upload():
     adwords_service.upload(flawed_operations, is_debug=True, method="standard", service_name="AdGroupService")
     adwords_service.upload(flawed_operations, is_debug=True, method="batch", report_on_results=True)
     adwords_service.upload(flawed_operations, is_debug=False, method="standard", service_name="AdGroupService")
+
+
+def test_fillna_with_temp_id():
+    import numpy as np
+    from tests import adwords_service
+    from freedan import BatchUploader
+
+    batch_uploader = BatchUploader(adwords_service, is_debug=True, report_on_results=True, batch_sleep_interval=-1)
+    assert batch_uploader.fillna_with_temp_id(np.nan) == -1
+    assert batch_uploader.fillna_with_temp_id(-1) == -1
+    assert batch_uploader.fillna_with_temp_id(230) == 230
+    assert batch_uploader.fillna_with_temp_id(np.nan) == -2
+    assert batch_uploader.fillna_with_temp_id("asjd") == "asjd"
+
+
+def test_errors():
+    from freedan import AdWordsError
+
+    index = 0
+    adwords_error = None
+    AdWordsError.from_adwords_error(index, adwords_error)
+
+    pass

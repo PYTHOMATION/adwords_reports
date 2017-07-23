@@ -1,8 +1,7 @@
-import collections
 import datetime
 import time
+import collections
 from urllib.request import urlopen
-
 import pandas as pd
 
 from freedan.adwords_services.adwords_error import AdWordsError
@@ -55,7 +54,7 @@ class BatchUploader:
         :param operations: tuple of lists of operations
         :return: return value of adwords
         """
-        print("Uploading operations using batchjob")
+        print("Uploading operations using BatchJob")
         print("##### OperationUpload is LIVE: {is_live}. #####".format(is_live=(not self.is_debug)))
 
         if not self.is_debug:
@@ -156,9 +155,8 @@ class BatchUploader:
             print(summary_message)
         return all_errors
 
-    @staticmethod
-    def fillna_with_temp_id(batchjob_helper, nan_or_id):
+    def fillna_with_temp_id(self, nan_or_id):
         """ If id is np.nan, return new temporary id (negative int), else return the id"""
         if pd.isnull(nan_or_id):
-            return int(batchjob_helper.GetId())
+            return int(self.batch_job_helper.GetId())
         return nan_or_id
