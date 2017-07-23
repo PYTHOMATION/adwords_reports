@@ -29,8 +29,7 @@ class StandardUploader:
         print("##### OperationUpload is LIVE: %s. #####" % (not self.client.validate_only))
 
         result, error_list = self.upload(operations, service, is_label)
-        if not self.is_debug:
-            self.print_failures(error_list)
+        self.print_failures(error_list)
         return result
 
     @ErrorRetryer()
@@ -49,8 +48,7 @@ class StandardUploader:
         except suds.WebFault as e:
             result = None
             if "detail" not in e.fault:
-                # hack
-                error_list = ["is_label error"]
+                error_list = ["is_label error"]  # hack
             else:
                 error_list = e.fault.detail.ApiExceptionFault.errors
         finally:
@@ -58,10 +56,9 @@ class StandardUploader:
             self.client.validate_only = False
         return result, error_list
 
-    @staticmethod
-    def print_failures(error_list):
+    def print_failures(self, error_list):
         """ Printing failed operations + reason using AdWordsError model """
-        if not error_list:
+        if not error_list and not self.is_debug:
             print("All operations successfully uploaded.")
         elif error_list == ["is_label error"]:
             print("Please use 'is_label' parameter for uploading label operations with standard upload.")

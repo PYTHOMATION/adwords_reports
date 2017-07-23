@@ -200,14 +200,14 @@ def test_download_objects():
 
 
 def test_upload():
-    from tests import adwords_service
+    from tests import adwords_service, adgroup1_name, adgroup1_id
     from freedan import AdGroup, Label
     from freedan.adwords_services.standard_uploader import MAX_OPERATIONS_STANDARD_UPLOAD
 
     ag_label = Label("ag_label_test", adwords_service, debug=False)  # not debug so it uses id used in test account
-    label_operations = [ag_label.apply_on_adgroup_operation(adgroup_id=47391167467)]
-    correct_operations = [AdGroup.set_name_operation(adgroup_id=47391167467, new_name="Ad Group #1")]
-    flawed_operations = [AdGroup.set_name_operation(adgroup_id=473911674664, new_name="Ad Group #1")]
+    label_operations = [ag_label.apply_on_adgroup_operation(adgroup_id=adgroup1_id)]
+    correct_operations = [AdGroup.set_name_operation(adgroup_id=adgroup1_id, new_name=adgroup1_name)]
+    flawed_operations = [AdGroup.set_name_operation(adgroup_id=adgroup1_id+1, new_name=adgroup1_name)]
 
     # IOErrors
     # missing service name
@@ -215,8 +215,7 @@ def test_upload():
         adwords_service.upload(correct_operations, is_debug=True, method="standard")
 
     # too many operations for standard upload
-    op_count = MAX_OPERATIONS_STANDARD_UPLOAD + 1
-    too_many_operations = [AdGroup.set_name_operation(adgroup_id=47391167467, new_name="Ad Group #1")] * op_count
+    too_many_operations = correct_operations * (MAX_OPERATIONS_STANDARD_UPLOAD + 1)
     with pytest.raises(IOError):
         adwords_service.upload(too_many_operations, is_debug=True, method="standard", service_name="AdGroupService")
 
@@ -251,13 +250,3 @@ def test_fillna_with_temp_id():
     assert batch_uploader.fillna_with_temp_id(230) == 230
     assert batch_uploader.fillna_with_temp_id(np.nan) == -2
     assert batch_uploader.fillna_with_temp_id("asjd") == "asjd"
-
-
-def test_errors():
-    from freedan import AdWordsError
-
-    index = 0
-    adwords_error = None
-    AdWordsError.from_adwords_error(index, adwords_error)
-
-    pass

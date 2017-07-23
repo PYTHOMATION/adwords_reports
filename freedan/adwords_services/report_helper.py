@@ -6,7 +6,7 @@ from freedan.adwords_services.adwords_service import AdWordsService
 SPECIAL_FLOATS = (pd.np.inf, -pd.np.inf, pd.np.nan)
 
 
-class ReportNormaliser:
+class ReportHelper:
     """ Centralizing some often used functionality for cleaning DataFrames/AdWords reports """
     def __init__(self):
         pass
