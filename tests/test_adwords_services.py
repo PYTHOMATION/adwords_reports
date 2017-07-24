@@ -199,7 +199,7 @@ def test_download_objects():
     assert result[0]["criterion"]["text"] == "test_kw_1"
 
 
-def test_good_upload():
+def test_too_many_operations_in_standard_upload():
     from tests import adwords_service, adgroup1_name, adgroup1_id
     from freedan import AdGroup
 
@@ -210,12 +210,17 @@ def test_good_upload():
     with pytest.raises(IOError):
         adwords_service.upload(too_many_operations, is_debug=True, method="standard")
 
-    # correct operations
+def test_good_upload():
+    from tests import adwords_service, adgroup1_name, adgroup1_id
+    from freedan import AdGroup
+
+    correct_operations = [AdGroup.set_name_operation(adgroup_id=adgroup1_id, new_name=adgroup1_name)]
+
     adwords_service.upload(correct_operations, is_debug=True, method="standard")
     adwords_service.upload(correct_operations, is_debug=True, method="batch")
     adwords_service.upload(correct_operations, is_debug=False, method="standard")
-    adwords_service.upload(
-        correct_operations, is_debug=False, method="batch", report_on_results=False, batch_sleep_interval=2)
+    adwords_service.upload(correct_operations, is_debug=False, method="batch",
+                           report_on_results=False, batch_sleep_interval=2)
 
 
 def test_flawed_upload():
@@ -229,6 +234,24 @@ def test_flawed_upload():
     adwords_service.upload(flawed_operations, is_debug=False, method="standard")
 
 
+def test_different_operation_types_in_standard_upload():
+    from tests import adwords_service, adgroup1_name, adgroup1_id
+    from freedan import AdGroup, Label
+
+    # this test scenario is particularly interesting since both use the AdGroupService for upload.
+    # but they use mutate and mutateLabel in the actual mutate call
+    # so an error must be raised
+    ag_label = Label("ag_label_test")
+    ag_label.update_id(adwords_service, is_debug=True)
+    correct_operations = [
+        AdGroup.set_name_operation(adgroup_id=adgroup1_id, new_name=adgroup1_name),
+        ag_label.apply_on_adgroup_operation(adgroup_id=adgroup1_id)
+    ]
+
+    with pytest.raises(IOError):
+        adwords_service.upload(correct_operations, is_debug=True, method="standard")
+
+
 def test_label_upload():
     from tests import adwords_service, adgroup1_id
     from freedan import Label
@@ -237,9 +260,8 @@ def test_label_upload():
     ag_label.update_id(adwords_service, is_debug=True)
     label_operations = [ag_label.apply_on_adgroup_operation(adgroup_id=adgroup1_id)]
 
-    adwords_service.upload(label_operations, is_debug=True, method="standard", is_label=True)
-    adwords_service.upload(label_operations, is_debug=True, method="batch")
     adwords_service.upload(label_operations, is_debug=True, method="standard")
+    adwords_service.upload(label_operations, is_debug=True, method="batch")
 
 
 def test_fillna_with_temp_id():

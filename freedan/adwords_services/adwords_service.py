@@ -237,14 +237,12 @@ class AdWordsService:
             time.sleep(0.5)
         return results
 
-    def upload(self, operations, is_debug, method="standard", is_label=False,
+    def upload(self, operations, is_debug, method="standard",
                partial_failure=True, report_on_results=True, batch_sleep_interval=-1):
         """ Taking care of all scenarios when operations need to be uploaded to AdWords.
         :param operations: list of operations
         :param is_debug: bool
         :param method: method for uploads < 5k. standard is faster, but less powerful
-        :param service_name: service of operations. not needed for batch upload
-        :param is_label: bool. Label upload works slightly different
         :param partial_failure: bool
         :param report_on_results: bool, whether batchjob should download results or not
         :param batch_sleep_interval: int, -1 = exponential
@@ -262,7 +260,7 @@ class AdWordsService:
 
         elif method == "standard":
             standard_uploader = StandardUploader(self, is_debug, partial_failure)
-            return standard_uploader.execute(operations, is_label)
+            return standard_uploader.execute(operations)
 
         elif method == "batch":
             batch_uploader = BatchUploader(self, is_debug, report_on_results, batch_sleep_interval)
