@@ -50,7 +50,7 @@ Abstract (expected) workflow of those scripts:
     credentials_path = "adwords_credentials.yaml"
     adwords_service = AdWordsService(credentials_path)
     ```
-* Try to run the code in "examples/basic/account_hierarchy.py" to see if everything is working
+1. Try to run the code in *examples/basic/account_hierarchy.py* to see if everything is working
 
 ## Technology
 * Everything is built with Python. I'm using python 3.6. and didn't check for compatibility with other Python versions
@@ -69,16 +69,18 @@ you a lot of time. Let me know if you find them useful!
 ## Who do I talk to?
 The project was launched and is currently maintained by me, [Martin Winkel](https://www.linkedin.com/in/martin-winkel-90678977):
  martin.winkel.pps@gmail.com.
+ 
 I recently relocated to Vancouver, BC (Canada)!
 
 ## Bugs
-If you've found a bug, please let me know. File an issue or send me an email
+If you've found a bug, please let me know. File an issue or send me an email.
 
 ## Contribute
 Contributors are very welcome! There's still a lot of good stuff to build :)
+
 If you find any important functionality missing, please let me know or try to integrate it with a
 pull request.
 
 ## Future
-* The next big step will be to add placeholder methods to Account, Campaign, AdGroup and ETA
-* Then you can plug and play your unique business logic encoded in those object names 
+The next big step will be to add placeholder methods to Account, Campaign, AdGroup and ETA.
+Then you can plug and play your unique business logic encoded in those object names 
