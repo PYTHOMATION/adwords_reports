@@ -8,7 +8,7 @@ algorithm.
 Freedan provides an alternative to **UI Scripts**, **Power Editor** by building on top of the **native
 Python client library** for Google AdWords.
 
-Especially when accounts become large, the first two solutions tend to get slow and painful to use.
+Especially when accounts become large, the former solutions tend to get slow and painful to use.
 Compared to UI Scripts, you have the freedom to test and integrate the code to your existing code base.
 Also, you won't encounter any of the limitations such as limited runtime, limited scheduling options,
 operation limits etc. since you can host it on your own.
@@ -17,32 +17,32 @@ Freedan provides a simpler user interface for the most frequently used parts of 
 incorporating all best practises suggested by Google.
 
 ## Use cases
-Common goals for freedan scripts:
-* validate/adapt namings of accounts, campaigns, adgroups, ... > improve data quality
-* delete old/empty campaigns, adgroups, ... > improve speed when working with Power Editor
-* adjust bids > improve cost efficiency of accounts
-* update ads > improve customer experience + raise CTR
-* create negative keywords > reallocate search queries to more suitable keywords and/or block bad traffic
-* create new accounts / add more keywords > Increase reach to target more customers
+Common goals for Freedan scripts:
+* Validate/adapt namings of accounts, campaigns, adgroups, ... > improve data quality
+* Delete old/empty campaigns, adgroups, ... > improve speed when working with Power Editor
+* Adjust bids > improve cost efficiency of accounts
+* Update ads > improve customer experience + raise CTR
+* Create negative keywords > reallocate search queries to more suitable keywords and/or block bad traffic
+* Create new accounts / add more keywords > increase reach to target more customers
 
 Expected workflow of those scripts:
-1. gather custom input (cli, data warehouses, google drive, ...)
-1. gather account information from AdWords
-1. compute changes
-1. upload updated parameters back to AdWords
+1. Gather custom input (CLI, data warehouses, Google Drive, ...)
+1. Gather account information from AdWords
+1. Compute changes
+1. Upload updated parameters back to AdWords
 
 ## Getting started
-1. For an introduction to AdWords refer to AdWords_Introduction.md
+1. For an introduction to AdWords refer to *AdWords_Introduction.md*.
 1. Install python 3.6.
     * Check out [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv)
     if you have an older version of python installed
-1. You can install freedan using pip:
+1. You can install Freedan using pip.
 
     `$ pip install freedan`
-1. Get access to AdWords API and cache all credential information in a .yaml file
-    * [Googles tutorial for authenticating with their API](https://www.youtube.com/watch?v=yaDlZMfYWkg&list=PLOU2XLYxmsII2PCvm73bwxRCu2g_dyp67&index=2) 
-    * [Googles client library for python](https://github.com/googleads/googleads-python-lib)
-    * You'll need to pass the path to this file to the AdWordsService object for authentication
+1. Get access to AdWords API and cache all credential information in a .yaml file.
+    * [Google's tutorial for authenticating with their API](https://www.youtube.com/watch?v=yaDlZMfYWkg&list=PLOU2XLYxmsII2PCvm73bwxRCu2g_dyp67&index=2) 
+    * [Google's client library for python](https://github.com/googleads/googleads-python-lib)
+    * You'll need to pass the path to this file to the AdWordsService object for authentication.
     
     ```
     from freedan import AdWordsService
@@ -50,15 +50,15 @@ Expected workflow of those scripts:
     credentials_path = "adwords_credentials.yaml"
     adwords_service = AdWordsService(credentials_path)
     ```
-1. Try to run the code in *examples/basic/account_hierarchy.py* to see if everything is working
+1. Try to run the code in *examples/basic/account_hierarchy.py* to see if everything is working.
 
 ## Technology
 * Everything is built with Python. I'm using python 3.6. and didn't check for compatibility with other Python versions
-    * According Raymond Hettingers [great talk about dictionaries in python 3.6.](https://www.youtube.com/watch?v=p33CVV29OG8)
+    * According Raymond Hettinger's [great talk about dictionaries in python 3.6.](https://www.youtube.com/watch?v=p33CVV29OG8)
     you should consider updating anyway ;)
-* All scripts heavily rely on the [pandas](https://github.com/pandas-dev/pandas): the flexible, 
+* All scripts heavily rely on [pandas](https://github.com/pandas-dev/pandas): The flexible, 
 easy and powerful data analysis library for python
-* Tests are intended to work with [pytest](https://github.com/pytest-dev/pytest): a very easy,
+* Tests are intended to work with [pytest](https://github.com/pytest-dev/pytest): A very easy,
 yet powerful framework for testing
 
 ## Examples

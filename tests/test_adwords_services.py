@@ -32,7 +32,7 @@ def test_account_selector():
         "CurrencyCode", "DateTimeZone", "TestAccount"
     ]
 
-    no_pred_mcc = adwords_service._account_selector(predicates=None, skip_mccs=False)
+    no_pred_mcc = adwords_service.account_selector(predicates=None, skip_mccs=False)
     assert no_pred_mcc == {
         "fields": default_fields,
         "ordering": [{
@@ -41,7 +41,7 @@ def test_account_selector():
         }]
     }
 
-    no_pred_no_mcc = adwords_service._account_selector(predicates=None, skip_mccs=True)
+    no_pred_no_mcc = adwords_service.account_selector(predicates=None, skip_mccs=True)
     assert no_pred_no_mcc == {
         "fields": default_fields,
         "predicates": [{
@@ -56,7 +56,7 @@ def test_account_selector():
     }
 
     dummy_pred = [{"field": "Name", "operator": "EQUALS", "values": "Test1"}]
-    pred_mcc = adwords_service._account_selector(predicates=dummy_pred, skip_mccs=False)
+    pred_mcc = adwords_service.account_selector(predicates=dummy_pred, skip_mccs=False)
     assert pred_mcc == {
         "fields": default_fields,
         "predicates": [{
@@ -70,7 +70,7 @@ def test_account_selector():
         }]
     }
 
-    pred_no_mcc = adwords_service._account_selector(predicates=dummy_pred, skip_mccs=True)
+    pred_no_mcc = adwords_service.account_selector(predicates=dummy_pred, skip_mccs=True)
     assert pred_no_mcc == {
         "fields": default_fields,
         "predicates": [{
@@ -92,7 +92,7 @@ def test_account_selector():
 def test_get_page():
     from tests import adwords_service
 
-    acc_selector = adwords_service._account_selector(predicates=None, skip_mccs=True)
+    acc_selector = adwords_service.account_selector(predicates=None, skip_mccs=True)
     result = adwords_service._get_page(acc_selector, "ManagedCustomerService")
     # hack but I couldn't import the class. please fix if you can
     assert str(type(result)) == "<class 'suds.sudsobject.ManagedCustomerPage'>"

@@ -85,7 +85,7 @@ class AdWordsService:
         return service_object.get(selector)
 
     @staticmethod
-    def _account_selector(predicates, skip_mccs):
+    def account_selector(predicates, skip_mccs):
         account_selector = {
             "fields": [
                 "Name", "CustomerId", "AccountLabels", "CanManageClients",
@@ -119,7 +119,7 @@ class AdWordsService:
         :param convert: bool, convert to SearchAccount object
         :return: generator yielding dicts with core information of accounts
         """
-        account_selector = self._account_selector(predicates, skip_mccs)
+        account_selector = self.account_selector(predicates, skip_mccs)
         account_page = self._get_page(account_selector, "ManagedCustomerService")
         if "entries" not in account_page:
             raise LookupError("Nothing matches the selector.")
