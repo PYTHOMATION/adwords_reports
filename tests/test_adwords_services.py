@@ -251,3 +251,58 @@ def test_fillna_with_temp_id():
     assert batch_uploader.fillna_with_temp_id(230) == 230
     assert batch_uploader.fillna_with_temp_id(np.nan) == -2
     assert batch_uploader.fillna_with_temp_id("asjd") == "asjd"
+
+
+def test_report_helper():
+    import numpy as np
+    import pandas as pd
+    from freedan.adwords_services.report_helper import convert_adwords_columns, replace_special_float
+
+    # special float conversion
+    nan_df = pd.DataFrame([[np.inf, np.nan],
+                           [np.nan, -np.inf]], columns=list("ab"))
+    nan_series = nan_df["a"]
+
+    zero_df = pd.DataFrame([[0.0, 0.0],
+                            [0.0, 0.0]], columns=list("ab"))
+    zero_series = zero_df["a"]
+    assert replace_special_float(nan_series).equals(zero_series)
+    assert replace_special_float(nan_df).equals(zero_df)
+    assert replace_special_float(np.nan) == 0.0
+
+    # adwords columns conversion
+    # input df
+    cols = [
+        "CpcBid", "Cost", "SearchRankLostImpressionShare", "KeywordMatchType", "Criteria",
+        "AdGroupDesktopBidModifier", "AdGroupMobileBidModifier", "AdGroupTabletBidModifier",
+        "CampaignDesktopBidModifier", "CampaignMobileBidModifier", "CampaignTabletBidModifier"
+    ]
+    input_values = [
+        [1000000, 1320000, " --", "Exact", "Asd", " --", "30%", "-10%", " --", "30%", "-10%"],
+        [1000000, 1320000, "30%", "Phrase", "+asd", " --", "30%", "-10%", " --", "30%", "-10%"],
+        [1000000, 1320000, "> 90%", "Broad", "asd", " --", "30%", "-10%", " --", "30%", "-10%"]
+    ]
+    adwords_df = pd.DataFrame(input_values, columns=cols)
+
+    # expected
+    new_cols = [
+        "AdGroupDesktop_OperationType", "AdGroupMobile_OperationType", "AdGroupTablet_OperationType",
+        "CampaignDesktop_OperationType", "CampaignMobile_OperationType", "CampaignTablet_OperationType"
+    ]
+    expected_values = [
+        [1.0, 1.32, -1.0, "EXACT", "asd", 1.0, 1.3, 0.9, 1.0, 1.3, 0.9, "ADD", "SET", "SET", "ADD", "SET", "SET"],
+        [1.0, 1.32, 0.3, "PHRASE", "asd", 1.0, 1.3, 0.9, 1.0, 1.3, 0.9, "ADD", "SET", "SET", "ADD", "SET", "SET"],
+        [1.0, 1.32, 0.9, "BROAD", "asd", 1.0, 1.3, 0.9, 1.0, 1.3, 0.9, "ADD", "SET", "SET", "ADD", "SET", "SET"]
+    ]
+    expected_df = pd.DataFrame(expected_values, columns=cols+new_cols)
+
+    expected_values_with_pluses = [
+        [1.0, 1.32, -1.0, "EXACT", "asd", 1.0, 1.3, 0.9, 1.0, 1.3, 0.9, "ADD", "SET", "SET", "ADD", "SET", "SET"],
+        [1.0, 1.32, 0.3, "PHRASE", "+asd", 1.0, 1.3, 0.9, 1.0, 1.3, 0.9, "ADD", "SET", "SET", "ADD", "SET", "SET"],
+        [1.0, 1.32, 0.9, "BROAD", "asd", 1.0, 1.3, 0.9, 1.0, 1.3, 0.9, "ADD", "SET", "SET", "ADD", "SET", "SET"]
+    ]
+    expected_df_with_pluses = pd.DataFrame(expected_values_with_pluses, columns=cols+new_cols)
+
+    assert convert_adwords_columns(adwords_df.copy()).equals(expected_df)
+    assert convert_adwords_columns(adwords_df.copy(), add_operation_type=False).equals(expected_df[cols])
+    assert convert_adwords_columns(adwords_df.copy(), remove_pluses=False).equals(expected_df_with_pluses)

@@ -55,7 +55,7 @@ class AdWordsService:
         """ Convert micro amount to regular euro amount
             - divided by one million
             - and rounded to 2 fractional digits """
-        assert isinstance(number, int)
+        assert isinstance(number, (float, int))
         return round(float(number) / MICRO_FACTOR, 2)
 
     @ErrorRetryer()
