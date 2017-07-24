@@ -74,7 +74,7 @@ def test_add_budget(capfd):
     budget = CampaignBudget(amount=200, convert_to_micro=True)
     operations = [budget.add_operation(temp_id=-1)]
 
-    adwords_service.upload(operations, is_debug=True, service_name="BudgetService")
+    adwords_service.upload(operations, is_debug=True)
 
     out, err = capfd.readouterr()
     assert out == no_error_stdout

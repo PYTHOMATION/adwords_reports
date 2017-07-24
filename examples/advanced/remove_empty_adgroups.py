@@ -24,7 +24,7 @@ def remove_empty_adgroups(path_credentials, is_debug):
         empty_adgroups = identify_empty_adgroups(adwords_service)
 
         operations = build_operations(empty_adgroups)
-        adwords_service.upload(operations, service_name="AdGroupService", is_debug=is_debug)
+        adwords_service.upload(operations, is_debug=is_debug)
 
 
 def build_operations(adgroups):

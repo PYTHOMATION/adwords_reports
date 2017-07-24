@@ -14,14 +14,18 @@ class StandardUploader:
         self.is_debug = is_debug
         self.partial_failure = partial_failure
 
-    def execute(self, operations, service_name, is_label):
+    def execute(self, operations, is_label):
         """ Uploads a list of operations to adwords api using standard mutate service.
         :return: response from adwords API
         """
         if len(operations) > MAX_OPERATIONS_STANDARD_UPLOAD:
             raise IOError("More than {num} operations. Please use batch upload.")
-        if service_name is None:
-            raise IOError("Please provide the according service of the operations")
+
+        operation_type = operations[0]["xsi_type"]
+        if "Label" in operation_type:
+            service_name = operation_type.replace("LabelOperation", "Service")
+        else:
+            service_name = operation_type.replace("Operation", "Service")
         service = self.adwords_service.init_service(service_name)
 
         self.client.partial_failure = self.partial_failure
