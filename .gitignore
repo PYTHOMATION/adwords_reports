@@ -106,6 +106,4 @@ ENV/
 # mypy
 .mypy_cache/
 try_stuff.py
-examples
 /adwords_credentials.yaml
-/try_stuff2.py
