@@ -5,15 +5,16 @@ large accounts, quickly test new ideas to improve performance or even build soph
 solutions like a custom bidding algorithm.
 
 ## How does it compare to other AdWords automation solutions from Google?
-Freedan offers to fill the gap that's left by Google Scripts, AdWords Power Editor and the native
-API clients for Google AdWords. Scripts and PowerEditor are great for a lot of use cases, but they
-tend to become a pain when accounts grow very big and business logic gets complicated.
-If you find yourself in such a situation you're forced to utilize AdWords API. Most companies struggle
-at this point, since resources are limited, time pressure is high and AdWords is a complicated tool,
-due to its flexibility and customization possibilities. Many developers find themselves wasting a lot
-of time trying to understand complicated documentations and working with incomplete specifications
-from their Marketing team. With freedan you can quickly prototype some of the ideas and grow your
-business at the speed you like to.
+Freedan offers to fill the gap that's left by **UI Scripts**, **Power Editor** and the **native
+API clients** for Google AdWords API.
+
+Especially when accounts become large the first two solutions tend to get slow and painful to use.
+Compared to Scripts you have the freedom to test and integrate the code to your existing code base.
+Also you won't encounter any of the limitations from the user interface (runtime, limited scheduling,
+operation limits, etc.).
+
+Freedan builds on top of the native API client and aims to provide a simpler user interface for the
+most frequently used parts. It incorporates all best practises suggested by Google. 
 
 ## Use cases
 Common goals scripts written with freedan might be:
@@ -33,7 +34,8 @@ Abstract (expected) workflow of those scripts:
 ## Getting started
 1. For an introduction to AdWords refer to AdWords_Introduction.md
 1. Install python 3.6.
-    * Check out pyenv and pyenv-virtualenv if you have an older version of python installed
+    * Check out [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv)
+    if you have an older version of python installed
 1. You can install freedan using pip:
 
     `$ pip install freedan`
@@ -48,21 +50,25 @@ Abstract (expected) workflow of those scripts:
     credentials_path = "adwords_credentials.yaml"
     adwords_service = AdWordsService(credentials_path)
     ```
-* Try to run the code from "examples/basic/account_hierarchy.py" to see if everything is working
+* Try to run the code in "examples/basic/account_hierarchy.py" to see if everything is working
 
 ## Technology
 * Everything is built with Python. I'm using python 3.6. and didn't check for compatibility with other Python versions
-    * According Raymond Hettingers [great talk about dictionaries in python 3.6.](https://www.youtube.com/watch?v=p33CVV29OG8) you should consider updating anyway;)
-* All scripts heavily rely on the **pandas** package: the flexible, easy and powerful data analysis library for python
-* Tests are intended to work with **pytest**: a very easy, yet powerful framework for testing
+    * According Raymond Hettingers [great talk about dictionaries in python 3.6.](https://www.youtube.com/watch?v=p33CVV29OG8)
+    you should consider updating anyway;)
+* All scripts heavily rely on the [pandas](https://github.com/pandas-dev/pandas): the flexible, 
+easy and powerful data analysis library for python
+* Tests are intended to work with [pytest](https://github.com/pytest-dev/pytest): a very easy,
+yet powerful framework for testing
 
 ## Examples
 Please have a look into the example folder. Those scripts demonstrate the power and beauty of the
 framework. Some of the advanced scripts might be ready for production as is - so they might safe
-you a lot of time. Let me know if you find them usefull!
+you a lot of time. Let me know if you find them useful!
 
 ## Who do I talk to?
-The project was launched and is currently maintained by me, [Martin Winkel](https://www.linkedin.com/in/martin-winkel-90678977): martin.winkel.pps@gmail.com.
+The project was launched and is currently maintained by me, [Martin Winkel](https://www.linkedin.com/in/martin-winkel-90678977):
+ martin.winkel.pps@gmail.com.
 I recently relocated to Vancouver, BC (Canada)!
 
 ## Bugs
@@ -70,7 +76,9 @@ If you've found a bug, please let me know. File an issue or send me an email
 
 ## Contribute
 Contributors are very welcome! There's still a lot of good stuff to build :)
+If you find any important functionality missing, please let me know or try to integrate it with a
+pull request.
 
 ## Future
 * The next big step will be to add placeholder methods to Account, Campaign, AdGroup and ETA
-* Then you could plug and play your unique business logic encoded in those object names 
+* Then you can plug and play your unique business logic encoded in those object names 
