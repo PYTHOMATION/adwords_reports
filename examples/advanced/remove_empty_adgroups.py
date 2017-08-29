@@ -22,6 +22,7 @@ def remove_empty_adgroups(path_credentials, is_debug):
         print(account)
 
         empty_adgroups = identify_empty_adgroups(adwords_service)
+        # potentially save this DataFrame as a changelog
 
         operations = build_operations(empty_adgroups)
         adwords_service.upload(operations, is_debug=is_debug)

@@ -7,9 +7,8 @@ class KeywordFinalUrl:
         self.enforce_protocol()
 
     def enforce_protocol(self):
+        assert "http://" in self.url or "https://" in self.url
         if self.https:
             self.url = self.url.replace("http://", "https://")
-            assert "https://" in self.url
         else:
             self.url = self.url.replace("https://", "http://")
-            assert "http://" in self.url

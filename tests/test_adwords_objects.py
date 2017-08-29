@@ -138,6 +138,7 @@ def test_keyword_final_url():
 
 
 def test_keyword():
+    from freedan.adwords_services.adwords_service import MICRO_FACTOR
     from freedan import Keyword, KeywordFinalUrl
 
     good_url = KeywordFinalUrl("https://asd.ca")
@@ -176,6 +177,14 @@ def test_keyword():
     assert Keyword.to_broad_modified("asd +adas") == "+asd +adas"
     assert Keyword.to_broad_modified("+asd adas") == "+asd +adas"
     assert Keyword.to_broad_modified("+asd +adas") == "+asd +adas"
+
+    # micro bid range
+    assert Keyword.is_good_micro_bid(0.01 * MICRO_FACTOR)  # 1 cent
+    assert Keyword.is_good_micro_bid(0.1 * MICRO_FACTOR)  # 1 euro
+    assert Keyword.is_good_micro_bid(1 * MICRO_FACTOR)  # 10 euro
+    assert Keyword.is_good_micro_bid(10 * MICRO_FACTOR)  # 10 euro
+    assert not Keyword.is_good_micro_bid(100 * MICRO_FACTOR)  # 100 euro
+    assert not Keyword.is_good_micro_bid(1000 * MICRO_FACTOR)  # 1000 euro
 
 
 def test_shared_set_overview():

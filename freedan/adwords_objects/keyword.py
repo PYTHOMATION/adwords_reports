@@ -1,4 +1,4 @@
-from freedan.adwords_services.adwords_service import AdWordsService
+from freedan.adwords_services.adwords_service import AdWordsService, MICRO_FACTOR
 from freedan.adwords_objects.keyword_final_url import KeywordFinalUrl
 
 MAX_WORDS_KEYWORD = 10
@@ -43,9 +43,14 @@ class Keyword:
         assert len(self.text) <= MAX_CHARS_KEYWORD
         assert len(self.text.split()) <= MAX_WORDS_KEYWORD
 
+    @staticmethod
+    def is_good_micro_bid(bid):
+        """ check if bid is in reasonable (micro) range """
+        return 100 * MICRO_FACTOR > bid >= 0.01 * MICRO_FACTOR
+
     def add_operation(self, adgroup_id, status="ENABLED", label_id=None):
         """ Add keyword to adgroup operation for adwords API """
-        assert self.max_cpc >= 10000  # i.e. at least 1 cent
+        self.is_good_micro_bid(self.max_cpc)
 
         operation = {
             "xsi_type": "AdGroupCriterionOperation",
@@ -63,15 +68,13 @@ class Keyword:
                     "urls": [self.final_url.url]
                 },
                 "biddingStrategyConfiguration": {
-                    "bids": [
-                        {
-                            "xsi_type": "CpcBid",
-                            "bid": {
-                                "xsi_type": "Money",
-                                "microAmount": self.max_cpc
-                            }
+                    "bids": [{
+                        "xsi_type": "CpcBid",
+                        "bid": {
+                            "xsi_type": "Money",
+                            "microAmount": self.max_cpc
                         }
-                    ]
+                    }]
                 }
             }
         }
@@ -101,6 +104,7 @@ class Keyword:
     def set_bid(adgroup_id, keyword_id, bid, convert_to_micro=True):
         if convert_to_micro:
             bid = AdWordsService.euro_to_micro(bid)
+        assert Keyword.is_good_micro_bid(bid)
 
         operation = {
             "xsi_type": "AdGroupCriterionOperation",
@@ -113,15 +117,13 @@ class Keyword:
                     "id": keyword_id,
                 },
                 "biddingStrategyConfiguration": {
-                    "bids": [
-                        {
-                            "xsi_type": "CpcBid",
-                            "bid": {
-                                "xsi_type": "Money",
-                                "microAmount": bid
-                            }
+                    "bids": [{
+                        "xsi_type": "CpcBid",
+                        "bid": {
+                            "xsi_type": "Money",
+                            "microAmount": bid
                         }
-                    ]
+                    }]
                 }
             }
         }
