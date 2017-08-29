@@ -4,13 +4,17 @@ import freedan
 from freedan import Keyword, KeywordFinalUrl
 
 
-def broad_to_broad_modified(path_credentials, is_debug):
+def keywords_to_lower_case(path_credentials, is_debug):
     """
-    A script that will look for (partially) "real" broad keywords and convert them to broad modified.
+    A script that will look for (partially) non-lower case keywords and convert them to lower case.
+
+    It's good practise to keep all your keywords lower case as adwords' serving is case insensitive, but keyword ids
+    aren't. Therefore you might end up with duplications or other unwanted side effects, for instance when matching
+    queries and existing keywords.
 
     CAUTION: Since you can't change the text of a keyword in adwords, the script will delete the old keyword and
              add a new one with the fixed text. This means history for those keywords will be reset.
-    CAUTION2: The new keywords will by default use https
+    CAUTION2: The new keywords will by default use https in final url
     :param path_credentials: str, path to your adwords credentials file
     :param is_debug: bool
     """
@@ -18,9 +22,9 @@ def broad_to_broad_modified(path_credentials, is_debug):
     for account in adwords_service.accounts():
         print(account)
 
-        real_broads = identify_real_broads(adwords_service)
+        non_lower_case = identify_non_lower_case(adwords_service)
 
-        operations = build_operations(real_broads)
+        operations = build_operations(non_lower_case)
         adwords_service.upload(operations, is_debug=is_debug, method="batch")
 
 
@@ -38,7 +42,7 @@ def build_operations(real_broads):
         match_type = row["KeywordMatchType"].upper()
         micro_bid = int(row["CpcBid"])
         status = row["Status"].upper()
-        new_text = Keyword.to_broad_modified(row["Criteria"])
+        new_text = row["Criteria"].lower()
         final_url = ast.literal_eval(row["FinalUrls"])[0]  # breaks if no final url is set
         final_url = KeywordFinalUrl(final_url, https=True)
 
@@ -54,7 +58,7 @@ def build_operations(real_broads):
     return add_operations, del_operations
 
 
-def identify_real_broads(adwords_service):
+def identify_non_lower_case(adwords_service):
     """ Download all keywords and identify the ones with missing pluses
     :param adwords_service: Executor object
     :return: DataFrame
@@ -64,10 +68,6 @@ def identify_real_broads(adwords_service):
         "Status", "CpcBid", "KeywordMatchType", "FinalUrls"
     ]
     predicates = [{
-        "field": "KeywordMatchType",
-        "operator": "EQUALS",
-        "values": "BROAD"
-    }, {
         "field": "Status",
         "operator": "NOT_EQUALS",
         "values": "REMOVED"
@@ -84,11 +84,13 @@ def identify_real_broads(adwords_service):
     keyword_report_def = adwords_service.report_definition("KEYWORDS_PERFORMANCE_REPORT", fields, predicates)
     keyword_report = adwords_service.download_report(keyword_report_def, include_0_imp=True)
 
-    is_real_broad = keyword_report["Criteria"].apply(Keyword.is_real_broad)
-    real_broads = keyword_report[is_real_broad]
-    return real_broads
+    # CAUTION: one could try to use native python function str.islower()
+    # but this results in undesired effects for Chinese
+    is_not_lower_case = keyword_report["Criteria"] != keyword_report["Criteria"].str.lower()
+    not_lower_case = keyword_report[is_not_lower_case]
+    return not_lower_case
 
 
 if __name__ == "__main__":
     adwords_credentials_path = "adwords_credentials.yaml"
-    broad_to_broad_modified(adwords_credentials_path, is_debug=True)
+    keywords_to_lower_case(adwords_credentials_path, is_debug=True)
