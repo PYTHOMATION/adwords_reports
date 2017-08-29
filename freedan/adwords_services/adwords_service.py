@@ -9,7 +9,7 @@ from freedan.adwords_services.standard_uploader import StandardUploader
 from freedan.adwords_services.batch_uploader import BatchUploader
 from freedan.other_services.error_retryer import ErrorRetryer
 
-DEFAULT_API_VERSION = "v201705"
+DEFAULT_API_VERSION = "v201708"
 
 # max and min bid modifiers
 MAX_BID_MODIFIER = 10.0

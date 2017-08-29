@@ -1,0 +1,4 @@
+googleads>=7.0.0
+pandas>=0.20.3
+Unidecode>=0.4.21
+pytest>=3.2.1
