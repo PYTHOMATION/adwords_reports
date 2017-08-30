@@ -7,14 +7,6 @@ def remove_empty_campaigns(path_credentials, is_debug):
     A script that will delete all empty Campaigns in all accounts.
     A Campaign is considered to be empty if it doesn't contain any AdGroups.
 
-    Before you use it in production you might want to:
-        - adapt the account selector
-        - change the upload method
-        - verify the script matches your needs, e.g. run it in debug mode and have a look into the resulting DataFrames
-    Prospect: Adapt this script to
-        - easily identify empty adgroups
-        - or adgroups without ads
-        - ...
     :param path_credentials: str, path to your adwords credentials file
     :param is_debug: bool
     """
