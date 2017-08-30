@@ -242,7 +242,7 @@ def test_different_operation_types_in_standard_upload():
     # but they use mutate and mutateLabel in the actual mutate call
     # so an error must be raised
     ag_label = Label("ag_label_test")
-    ag_label.update_id(adwords_service, is_debug=True)
+    ag_label.update_id(adwords_service, action_if_not_found="create", is_debug=True)
     correct_operations = [
         AdGroup.set_name_operation(adgroup_id=adgroup1_id, new_name=adgroup1_name),
         ag_label.apply_on_adgroup_operation(adgroup_id=adgroup1_id)
@@ -252,12 +252,22 @@ def test_different_operation_types_in_standard_upload():
         adwords_service.upload(correct_operations, is_debug=True, method="standard")
 
 
+def test_label_update_id():
+    from tests import adwords_service
+    from freedan import Label
+
+    ag_label = Label("ag_label_test")
+
+    with pytest.raises(AssertionError):
+        ag_label.update_id(adwords_service, action_if_not_found="get schwifty", is_debug=True)
+
+
 def test_label_upload():
     from tests import adwords_service, adgroup1_id
     from freedan import Label
 
     ag_label = Label("ag_label_test")
-    ag_label.update_id(adwords_service, is_debug=True)
+    ag_label.update_id(adwords_service, action_if_not_found="create", is_debug=True)
     label_operations = [ag_label.apply_on_adgroup_operation(adgroup_id=adgroup1_id)]
 
     adwords_service.upload(label_operations, is_debug=True, method="standard")

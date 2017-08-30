@@ -22,7 +22,7 @@ class StandardUploader:
             raise IOError("More than {num} operations. Please use batch upload.")
 
         operation_type = self.check_operation_type(operations)
-        is_label = "Label" in operation_type
+        is_label = "Label" in operation_type and operation_type != "LabelOperation"
         if is_label:
             service_name = operation_type.replace("LabelOperation", "Service")
         else:
