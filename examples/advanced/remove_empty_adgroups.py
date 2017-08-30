@@ -6,6 +6,7 @@ def remove_empty_adgroups(path_credentials, is_debug):
     """
     A script that will delete all empty AdGroups in all accounts.
     An AdGroup is considered to be empty if it doesn't contain any keywords.
+
     Before you use it in production you might want to:
         - adapt the account selector
         - change the upload method

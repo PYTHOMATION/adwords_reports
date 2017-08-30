@@ -107,8 +107,5 @@ ENV/
 .mypy_cache/
 try_stuff.py
 /adwords_credentials.yaml
-/examples/advanced/update_keyword_bids.py
-/examples/advanced/update_adgroup_names.py
 /examples/advanced/match_queries_and_keywords.py
 /examples/advanced/create_adgroup_using_batch_upload.py
-/examples/advanced/check_naming_logic.py

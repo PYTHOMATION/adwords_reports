@@ -5,7 +5,6 @@ from freedan import Campaign
 def remove_empty_campaigns(path_credentials, is_debug):
     """
     A script that will delete all empty Campaigns in all accounts.
-
     A Campaign is considered to be empty if it doesn't contain any AdGroups.
 
     Before you use it in production you might want to:
