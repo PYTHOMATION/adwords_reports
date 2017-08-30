@@ -58,28 +58,24 @@ def identify_empty_adgroups(adwords_service):
         "values": "REMOVED"
     }]
 
-    # define helper function since most arguments are equal for both reports
-    def temp_report_definition(report_type):
-        return adwords_service.report_definition(report_type, fields, predicates)
-
     # the adgroup report will contain all adgroups of the account
-    adgroup_report_def = temp_report_definition("ADGROUP_PERFORMANCE_REPORT")
+    adgroup_report_def = adwords_service.report_definition("ADGROUP_PERFORMANCE_REPORT", fields, predicates)
     all_adgroups = adwords_service.download_report(adgroup_report_def, include_0_imp=True)
-    if all_adgroups.empty:  # skip rest if no adgroups in the account. otherwise merge later on triggers warning
+    if all_adgroups.empty:  # skip rest if no adgroups in the account. otherwise merge below triggers warning
         return all_adgroups
 
     # the keyword report will only contain adgroups belonging to keywords in the account
-    keyword_report_def = temp_report_definition("KEYWORDS_PERFORMANCE_REPORT")
+    keyword_report_def = adwords_service.report_definition("KEYWORDS_PERFORMANCE_REPORT", fields, predicates)
     keyword_adgroups = adwords_service.download_report(keyword_report_def, include_0_imp=True)
 
     # identify all adgroups in adgroup_report that are not in keyword_report
     # could also be done with set operations, but you'd lose the nice tabular overview and it's less consistent
     # with other example scripts
-    keyword_adgroups["Keywords"] = True
+    keyword_adgroups["has_keywords"] = True
     adgroups = all_adgroups.merge(keyword_adgroups, how="left")\
         .fillna(False)
 
-    without_keywords = ~adgroups["Keywords"]
+    without_keywords = ~adgroups["has_keywords"]
     return adgroups[without_keywords]
 
 

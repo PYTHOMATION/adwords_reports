@@ -113,4 +113,3 @@ try_stuff.py
 /examples/advanced/label_adgroups.py
 /examples/advanced/create_adgroup_using_batch_upload.py
 /examples/advanced/check_naming_logic.py
-/examples/advanced/remove_empty_campaigns.py
