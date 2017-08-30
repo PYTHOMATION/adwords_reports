@@ -10,9 +10,9 @@ class AdGroup:
     def __init__(self, name):
         self.name = name
 
-    def add_operation(self, campaign_id, max_cpc, status="ENABLED", adgroup_id=None, label_id=None):
+    def add_operation(self, campaign_id, bid, status="ENABLED", adgroup_id=None, label_id=None):
         """ Operation to add a new adgroup """
-        _, micro_max_cpc = AdWordsService.reg_and_micro(max_cpc)
+        _, micro_max_cpc = AdWordsService.reg_and_micro(bid)
 
         operation = {
             "xsi_type": "AdGroupOperation",
@@ -90,9 +90,9 @@ class AdGroup:
         return operation
 
     @staticmethod
-    def set_bid_operation(adgroup_id, max_cpc):
+    def set_bid_operation(adgroup_id, bid):
         """ Operation to change the bid of an AdGroup """
-        _, micro_max_cpc = AdWordsService.reg_and_micro(max_cpc)
+        _, micro_max_cpc = AdWordsService.reg_and_micro(bid)
 
         operation = {
             "xsi_type": "AdGroupOperation",

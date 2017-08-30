@@ -10,13 +10,13 @@ class Keyword:
     Keywords ultimately determine the targeting in our accounts.
     Keywords consist of more than a text, they also have
         - match type
-        - bid (class detects and handles micro amounts automatically)
+        - bid (automatically detects and handles micro amounts)
         - final url
     """
-    def __init__(self, text, match_type, max_cpc, final_url):
+    def __init__(self, text, match_type, bid, final_url):
         self.text = text.lower()
         self.match_type = match_type.upper()
-        self.max_cpc, self.micro_max_cpc = AdWordsService.reg_and_micro(max_cpc)
+        self.max_cpc, self.micro_max_cpc = AdWordsService.reg_and_micro(bid)
         self.final_url = final_url
 
         self.basic_checks()

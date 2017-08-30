@@ -39,14 +39,14 @@ def build_operations(real_broads):
         adgroup_id = int(row["AdGroupId"])
         keyword_id = int(row["Id"])
         match_type = row["KeywordMatchType"].upper()
-        micro_bid = int(row["CpcBid"])
+        bid = int(row["CpcBid"])
         status = row["Status"].upper()
         new_text = Keyword.to_broad_modified(row["Criteria"])
         final_url = ast.literal_eval(row["FinalUrls"])[0]  # breaks if no final url is set
         final_url = KeywordFinalUrl(final_url, https=True)
 
         # new keyword
-        new_kw = Keyword(text=new_text, match_type=match_type, max_cpc=micro_bid, final_url=final_url)
+        new_kw = Keyword(text=new_text, match_type=match_type, bid=bid, final_url=final_url)
         add_operation = new_kw.add_operation(adgroup_id, status=status)
         add_operations.append(add_operation)
 

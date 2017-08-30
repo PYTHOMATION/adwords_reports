@@ -3,7 +3,7 @@
 import os
 
 
-__version__ = "0.1.7"
+__version__ = "0.1.8"
 
 base_dir = os.path.dirname(__file__)  # deepest freedan folder
 
