@@ -4,13 +4,13 @@ import pytest
 def test_micro_euro_conversion():
     from freedan import AdWordsService
 
-    assert AdWordsService.micro_to_euro(23000000) == 23.0
-    assert AdWordsService.micro_to_euro(1111111) == 1.11
-    assert AdWordsService.micro_to_euro(100) == 0.0
+    assert AdWordsService.micro_to_reg(23000000) == 23.0
+    assert AdWordsService.micro_to_reg(1111111) == 1.11
+    assert AdWordsService.micro_to_reg(100) == 0.0
 
-    assert AdWordsService.euro_to_micro(1.11) == 1110000
-    assert AdWordsService.euro_to_micro(1.1111) == 1110000
-    assert AdWordsService.euro_to_micro(0.003) == 0
+    assert AdWordsService.reg_to_micro(1.11) == 1110000
+    assert AdWordsService.reg_to_micro(1.1111) == 1110000
+    assert AdWordsService.reg_to_micro(0.003) == 0
 
 
 def test_init_service():

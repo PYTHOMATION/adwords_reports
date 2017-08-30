@@ -43,7 +43,7 @@ class AdWordsService:
         self.report_downloader = self.init_service("ReportDownloader")
 
     @staticmethod
-    def euro_to_micro(number):
+    def reg_to_micro(number):
         """ Convert a number to an micro amount:
             - times one million
             - and rounded to multiples of 10k """
@@ -51,12 +51,26 @@ class AdWordsService:
         return int(round(float(number) * MICRO_FACTOR, -4))
 
     @staticmethod
-    def micro_to_euro(number):
+    def micro_to_reg(number):
         """ Convert micro amount to regular euro amount
             - divided by one million
             - and rounded to 2 fractional digits """
         assert isinstance(number, (float, int))
         return round(float(number) / MICRO_FACTOR, 2)
+
+    @staticmethod
+    def reg_and_micro(number):
+        """ takes a bid amount and identifies if it's micro or regular format. Then returns both formats.
+        CAUTION: There might be currencies where this doesn't make sense
+        """
+        is_micro = number >= 0.01 * MICRO_FACTOR  # >= 10k must be micro
+        if is_micro:
+            regular = AdWordsService.micro_to_reg(number)
+            micro = AdWordsService.reg_to_micro(regular)  # redundant, but important for formatting
+        else:
+            micro = AdWordsService.reg_to_micro(number)
+            regular = AdWordsService.micro_to_reg(micro)  # redundant, but important for formatting
+        return regular, micro
 
     @ErrorRetryer()
     def _init_api_connection(self):

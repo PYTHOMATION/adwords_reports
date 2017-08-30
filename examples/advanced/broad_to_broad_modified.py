@@ -46,8 +46,7 @@ def build_operations(real_broads):
         final_url = KeywordFinalUrl(final_url, https=True)
 
         # new keyword
-        new_kw = Keyword(text=new_text, match_type=match_type, max_cpc=micro_bid,
-                         final_url=final_url, convert_to_micro=False)
+        new_kw = Keyword(text=new_text, match_type=match_type, max_cpc=micro_bid, final_url=final_url)
         add_operation = new_kw.add_operation(adgroup_id, status=status)
         add_operations.append(add_operation)
 

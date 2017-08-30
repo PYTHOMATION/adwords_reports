@@ -12,6 +12,8 @@ class AdGroup:
 
     def add_operation(self, campaign_id, max_cpc, status="ENABLED", adgroup_id=None, label_id=None):
         """ Operation to add a new adgroup """
+        _, micro_max_cpc = AdWordsService.reg_and_micro(max_cpc)
+
         operation = {
             "xsi_type": "AdGroupOperation",
             "operator": "ADD",
@@ -23,7 +25,7 @@ class AdGroup:
                     "bids": [{
                         "xsi_type": "CpcBid",
                         "bid": {
-                            "microAmount": max_cpc
+                            "microAmount": micro_max_cpc
                         }
                     }]
                 }
@@ -88,10 +90,9 @@ class AdGroup:
         return operation
 
     @staticmethod
-    def set_bid_operation(adgroup_id, max_cpc, convert_to_micro=True):
+    def set_bid_operation(adgroup_id, max_cpc):
         """ Operation to change the bid of an AdGroup """
-        if convert_to_micro:
-            max_cpc = AdWordsService.euro_to_micro(max_cpc)
+        _, micro_max_cpc = AdWordsService.reg_and_micro(max_cpc)
 
         operation = {
             "xsi_type": "AdGroupOperation",
@@ -102,7 +103,7 @@ class AdGroup:
                     "bids": [{
                         "xsi_type": "CpcBid",
                         "bid": {
-                            "microAmount": max_cpc
+                            "microAmount": micro_max_cpc
                         }
                     }]
                 }

@@ -20,7 +20,7 @@ def update_keyword_bids(path_credentials, is_debug):
         print(account)
 
         operations = [
-            Keyword.set_bid(adgroup_id=ADGROUP_ID, keyword_id=KEYWORD_ID, bid=NEW_BID, convert_to_micro=True)
+            Keyword.set_bid(adgroup_id=ADGROUP_ID, keyword_id=KEYWORD_ID, bid=NEW_BID)
         ]
         adwords_service.upload(operations, is_debug=is_debug)
 

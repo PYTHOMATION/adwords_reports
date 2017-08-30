@@ -67,11 +67,20 @@ def test_account():
     assert account.labels is None
 
 
+def test_budget():
+    from freedan import CampaignBudget
+    from freedan.adwords_services.adwords_service import MICRO_FACTOR
+
+    budget = CampaignBudget(amount=200)
+    assert budget.amount == 200
+    assert budget.micro_amount == 200 * MICRO_FACTOR
+
+
 def test_add_budget(capfd):
     from tests import adwords_service, no_error_stdout
     from freedan import CampaignBudget
 
-    budget = CampaignBudget(amount=200, convert_to_micro=True)
+    budget = CampaignBudget(amount=200)
     operations = [budget.add_operation(temp_id=-1)]
 
     adwords_service.upload(operations, is_debug=True)
@@ -145,10 +154,11 @@ def test_keyword():
     good_kw = Keyword("test KW 1", "Exact", 1, good_url)
     assert good_kw.text == "test kw 1"
     assert good_kw.match_type == "EXACT"
-    assert good_kw.max_cpc == 1000000  # micro amount
+    assert good_kw.max_cpc == 1.0
+    assert good_kw.micro_max_cpc == 1000000
     assert isinstance(good_kw.final_url, KeywordFinalUrl)
 
-    good_kw_no_conversion = Keyword("test KW 1", "Exact", 1, good_url, convert_to_micro=False)
+    good_kw_no_conversion = Keyword("test KW 1", "Exact", 1, good_url)
     assert good_kw_no_conversion.max_cpc == 1.0
 
     # wrong match type
@@ -177,14 +187,6 @@ def test_keyword():
     assert Keyword.to_broad_modified("asd +adas") == "+asd +adas"
     assert Keyword.to_broad_modified("+asd adas") == "+asd +adas"
     assert Keyword.to_broad_modified("+asd +adas") == "+asd +adas"
-
-    # micro bid range
-    assert Keyword.is_good_micro_bid(0.01 * MICRO_FACTOR)  # 1 cent
-    assert Keyword.is_good_micro_bid(0.1 * MICRO_FACTOR)  # 1 euro
-    assert Keyword.is_good_micro_bid(1 * MICRO_FACTOR)  # 10 euro
-    assert Keyword.is_good_micro_bid(10 * MICRO_FACTOR)  # 10 euro
-    assert not Keyword.is_good_micro_bid(100 * MICRO_FACTOR)  # 100 euro
-    assert not Keyword.is_good_micro_bid(1000 * MICRO_FACTOR)  # 1000 euro
 
 
 def test_shared_set_overview():

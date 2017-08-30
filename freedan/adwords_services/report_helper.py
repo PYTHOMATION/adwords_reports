@@ -45,7 +45,7 @@ def convert_adwords_columns(df, add_operation_type=True, remove_pluses=True):
 def micro_to_float(micro_amount, default_value=-1.00):
     """ Convert micro amounts to regular euro with default value if unexpected value occurs """
     try:
-        return AdWordsService.micro_to_euro(micro_amount)
+        return AdWordsService.micro_to_reg(micro_amount)
     except ValueError:
         return default_value
 
