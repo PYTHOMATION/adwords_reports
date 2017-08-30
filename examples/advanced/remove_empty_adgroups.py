@@ -43,7 +43,7 @@ def build_operations(adgroups):
 
 def identify_empty_adgroups(adwords_service):
     """ Download all adgroups and identify which don't have Keywords
-    :param adwords_service: Executor object
+    :param adwords_service: AdWordsService object
     :return: DataFrame
     """
     # ignore deleted entities

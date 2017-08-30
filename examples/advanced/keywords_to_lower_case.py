@@ -28,14 +28,14 @@ def keywords_to_lower_case(path_credentials, is_debug):
         adwords_service.upload(operations, is_debug=is_debug, method="batch")
 
 
-def build_operations(real_broads):
+def build_operations(non_lower_case):
     """ You can't update keyword texts, therefore every keyword has to be deleted and recreated with the right text
-    :param real_broads: DataFrame
+    :param non_lower_case: DataFrame
     :return: tuple of 2 lists of operations
     """
     add_operations = list()
     del_operations = list()
-    for index, row in real_broads.iterrows():
+    for index, row in non_lower_case.iterrows():
         # fetch current settings of keyword to create new one
         adgroup_id = int(row["AdGroupId"])
         keyword_id = int(row["Id"])
@@ -60,7 +60,7 @@ def build_operations(real_broads):
 
 def identify_non_lower_case(adwords_service):
     """ Download all keywords and identify the ones with missing pluses
-    :param adwords_service: Executor object
+    :param adwords_service: AdWordsService object
     :return: DataFrame
     """
     fields = [

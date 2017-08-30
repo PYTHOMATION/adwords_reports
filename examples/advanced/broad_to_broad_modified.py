@@ -8,6 +8,9 @@ def broad_to_broad_modified(path_credentials, is_debug):
     """
     A script that will look for (partially) "real" broad keywords and convert them to broad modified.
 
+    It's good practise to avoid real broad keywords in your adwords accounts since the targeting is hard to control and
+    it's very likely that your ad is showing for very unrelated searches.
+
     CAUTION: Since you can't change the text of a keyword in adwords, the script will delete the old keyword and
              add a new one with the fixed text. This means history for those keywords will be reset.
     CAUTION2: The new keywords will by default use https
@@ -56,7 +59,7 @@ def build_operations(real_broads):
 
 def identify_real_broads(adwords_service):
     """ Download all keywords and identify the ones with missing pluses
-    :param adwords_service: Executor object
+    :param adwords_service: AdWordsService object
     :return: DataFrame
     """
     fields = [
