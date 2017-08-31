@@ -16,7 +16,7 @@ class BatchUploader:
         - batch uploads
         - and the related error handling
     """
-    def __init__(self, adwords_service, is_debug, report_on_results, batch_sleep_interval):
+    def __init__(self, adwords_service, is_debug, report_on_results=True, batch_sleep_interval=-1):
         self.adwords_service = adwords_service
         self.batch_job_service = adwords_service.init_service("BatchJobService")
         self.batch_job_helper = self.batch_job_helper()
@@ -154,9 +154,3 @@ class BatchUploader:
             print("\nSummary:")
             print(summary_message)
         return all_errors
-
-    def fillna_with_temp_id(self, nan_or_id):
-        """ If id is np.nan, return new temporary id (negative int), else return the id"""
-        if pd.isnull(nan_or_id):
-            return int(self.batch_job_helper.GetId())
-        return nan_or_id

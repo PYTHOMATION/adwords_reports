@@ -3,7 +3,7 @@
 import os
 
 
-__version__ = "0.1.8"
+__version__ = "0.1.9"
 
 base_dir = os.path.dirname(__file__)  # deepest freedan folder
 
@@ -21,6 +21,7 @@ from freedan.adwords_objects.shared_set_overview import SharedSetOverview
 
 from freedan.adwords_services.adwords_service import AdWordsService
 from freedan.adwords_services.batch_uploader import BatchUploader
+from freedan.adwords_services.temp_id_helper import TempIdHelper
 from freedan.adwords_services.standard_uploader import StandardUploader
 from freedan.adwords_services.adwords_error import AdWordsError
 

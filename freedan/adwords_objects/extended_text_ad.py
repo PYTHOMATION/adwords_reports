@@ -82,7 +82,7 @@ class ExtendedTextAd:
                     "description": self.description,
                     "path1": self.path1,
                     "path2": self.path2,
-                    "finalUrls": [self.final_url]
+                    "finalUrls": [self.final_url.url]
                 }
             }
         }

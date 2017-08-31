@@ -276,15 +276,14 @@ def test_label_upload():
 
 def test_fillna_with_temp_id():
     import numpy as np
-    from tests import adwords_service
-    from freedan import BatchUploader
+    from freedan import TempIdHelper
 
-    batch_uploader = BatchUploader(adwords_service, is_debug=True, report_on_results=True, batch_sleep_interval=-1)
-    assert batch_uploader.fillna_with_temp_id(np.nan) == -1
-    assert batch_uploader.fillna_with_temp_id(-1) == -1
-    assert batch_uploader.fillna_with_temp_id(230) == 230
-    assert batch_uploader.fillna_with_temp_id(np.nan) == -2
-    assert batch_uploader.fillna_with_temp_id("asjd") == "asjd"
+    temp_id_helper = TempIdHelper()
+    assert temp_id_helper.fillna_with_temp_id(np.nan) == -1
+    assert temp_id_helper.fillna_with_temp_id(-1) == -1
+    assert temp_id_helper.fillna_with_temp_id(230) == 230
+    assert temp_id_helper.fillna_with_temp_id(np.nan) == -2
+    assert temp_id_helper.fillna_with_temp_id("asjd") == "asjd"
 
 
 def test_report_helper():
