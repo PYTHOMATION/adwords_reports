@@ -1,4 +1,5 @@
 from freedan.other_services.text_handler import TextHandler
+from freedan.adwords_objects.final_url import FinalUrl
 
 MAX_CHARS_HEADLINE1 = 30
 MAX_CHARS_HEADLINE2 = 30
@@ -17,12 +18,10 @@ class ExtendedTextAd:
         path1, path2 = self.clean_paths(path1, path2)
         self.path1 = path1
         self.path2 = path2
-
-        self.https = https
-        if self.https:
-            self.final_url = final_url.replace("http://", "https://")
-        else:
-            self.final_url = final_url.replace("https://", "http://")
+        if isinstance(final_url, str):
+            self.final_url = FinalUrl(final_url, https=https)
+        elif isinstance(final_url, FinalUrl):
+            self.final_url = final_url
 
         # validate if ad could be uploaded to adwords
         self.basic_checks()
@@ -33,6 +32,7 @@ class ExtendedTextAd:
         path1, path2 = TextHandler.remove_punctuation([path1, path2])
         path1 = path1.replace(" ", "")
         path2 = path2.replace(" ", "")
+
         return path1, path2
 
     def too_long(self):
@@ -59,10 +59,9 @@ class ExtendedTextAd:
         assert self.description
         assert self.path1 if self.path2 else True
         assert all(" " not in path for path in [self.path1, self.path2])  # no spaces in path
-        if self.https:
-            assert "https://" in self.final_url
-        else:
-            assert "http://" in self.final_url
+
+        if not isinstance(self.final_url, FinalUrl):
+            raise ValueError("Please pass a FinalUrl object in parameter final_url.")
         assert not self.too_long()
 
     def add_operation(self, adgroup_id, status="ENABLED"):

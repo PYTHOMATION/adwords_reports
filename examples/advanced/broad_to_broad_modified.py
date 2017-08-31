@@ -1,7 +1,7 @@
 import ast
 
 import freedan
-from freedan import Keyword, KeywordFinalUrl
+from freedan import Keyword, FinalUrl
 
 
 def broad_to_broad_modified(path_credentials, is_debug):
@@ -43,7 +43,6 @@ def build_operations(real_broads):
         status = row["Status"].upper()
         new_text = Keyword.to_broad_modified(row["Criteria"])
         final_url = ast.literal_eval(row["FinalUrls"])[0]  # breaks if no final url is set
-        final_url = KeywordFinalUrl(final_url, https=True)
 
         # new keyword
         new_kw = Keyword(text=new_text, match_type=match_type, bid=bid, final_url=final_url)

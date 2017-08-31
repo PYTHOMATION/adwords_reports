@@ -1,5 +1,5 @@
 from freedan.adwords_services.adwords_service import AdWordsService
-from freedan.adwords_objects.keyword_final_url import KeywordFinalUrl
+from freedan.adwords_objects.final_url import FinalUrl
 
 MAX_WORDS_KEYWORD = 10
 MAX_CHARS_KEYWORD = 80
@@ -13,11 +13,14 @@ class Keyword:
         - bid (automatically detects and handles micro amounts)
         - final url
     """
-    def __init__(self, text, match_type, bid, final_url):
+    def __init__(self, text, match_type, bid, final_url, https=True):
         self.text = text.lower()
         self.match_type = match_type.upper()
         self.max_cpc, self.micro_max_cpc = AdWordsService.reg_and_micro(bid)
-        self.final_url = final_url
+        if isinstance(final_url, str):
+            self.final_url = FinalUrl(final_url, https=https)
+        elif isinstance(final_url, FinalUrl):
+            self.final_url = final_url
 
         self.basic_checks()
 
@@ -38,8 +41,8 @@ class Keyword:
     def basic_checks(self):
         """ Check against limitation of AdWords """
         assert self.match_type in ("EXACT", "PHRASE", "BROAD")
-        if not isinstance(self.final_url, KeywordFinalUrl):
-            raise ValueError("Please pass a KeywordFinalUrl object in parameter final_url.")
+        if not isinstance(self.final_url, FinalUrl):
+            raise ValueError("Please pass a FinalUrl object in parameter final_url.")
 
         # adwords limitations
         assert len(self.text) <= MAX_CHARS_KEYWORD

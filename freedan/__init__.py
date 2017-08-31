@@ -13,7 +13,7 @@ from freedan.adwords_objects.campaign import Campaign
 from freedan.adwords_objects.campaign_budget import CampaignBudget
 from freedan.adwords_objects.adgroup import AdGroup
 from freedan.adwords_objects.keyword import Keyword
-from freedan.adwords_objects.keyword_final_url import KeywordFinalUrl
+from freedan.adwords_objects.final_url import FinalUrl
 from freedan.adwords_objects.negative_keyword import NegativeKeyword
 from freedan.adwords_objects.label import Label
 from freedan.adwords_objects.extended_text_ad import ExtendedTextAd

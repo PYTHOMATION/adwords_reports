@@ -1,7 +1,7 @@
 import ast
 
 import freedan
-from freedan import Keyword, KeywordFinalUrl
+from freedan import Keyword, FinalUrl
 
 
 def keywords_to_lower_case(path_credentials, is_debug):
@@ -44,7 +44,6 @@ def build_operations(non_lower_case):
         status = row["Status"].upper()
         new_text = row["Criteria"].lower()
         final_url = ast.literal_eval(row["FinalUrls"])[0]  # breaks if no final url is set
-        final_url = KeywordFinalUrl(final_url, https=True)
 
         # new keyword
         new_kw = Keyword(text=new_text, match_type=match_type, bid=bid, final_url=final_url)

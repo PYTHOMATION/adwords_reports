@@ -90,7 +90,7 @@ def test_add_budget(capfd):
 
 
 def test_eta():
-    from freedan import ExtendedTextAd
+    from freedan import ExtendedTextAd, FinalUrl
 
     # good eta with some conversions
     good_eta = ExtendedTextAd("a", "b", "c", "d.", "e f", "http://asd.ca")
@@ -99,7 +99,8 @@ def test_eta():
     assert good_eta.description == "c"
     assert good_eta.path1 == "d"
     assert good_eta.path2 == "ef"
-    assert good_eta.final_url == "https://asd.ca"
+    assert isinstance(good_eta.final_url, FinalUrl)
+    assert good_eta.final_url.url == "https://asd.ca"
     assert not good_eta.too_long()
 
     # path2 but no path1
@@ -131,32 +132,31 @@ def test_eta():
 
     # http url
     http_eta = ExtendedTextAd("a", "b", "d", "e", "f", "https://asd.ca", https=False)
-    assert http_eta.final_url == "http://asd.ca"
+    assert http_eta.final_url.url == "http://asd.ca"
 
 
 def test_keyword_final_url():
-    from freedan import KeywordFinalUrl
+    from freedan import FinalUrl
 
-    assert KeywordFinalUrl("https://asd.ca").url == "https://asd.ca"
-    assert KeywordFinalUrl("http://asd.ca").url == "https://asd.ca"
-    assert KeywordFinalUrl("https://asd.ca", https=False).url == "http://asd.ca"
-    assert KeywordFinalUrl("http://asd.ca", https=False).url == "http://asd.ca"
+    assert FinalUrl("https://asd.ca").url == "https://asd.ca"
+    assert FinalUrl("http://asd.ca").url == "https://asd.ca"
+    assert FinalUrl("https://asd.ca", https=False).url == "http://asd.ca"
+    assert FinalUrl("http://asd.ca", https=False).url == "http://asd.ca"
 
     with pytest.raises(AssertionError):
-        KeywordFinalUrl("asd.ca")
+        FinalUrl("asd.ca")
 
 
 def test_keyword():
-    from freedan.adwords_services.adwords_service import MICRO_FACTOR
-    from freedan import Keyword, KeywordFinalUrl
+    from freedan import Keyword, FinalUrl
 
-    good_url = KeywordFinalUrl("https://asd.ca")
+    good_url = FinalUrl("https://asd.ca")
     good_kw = Keyword("test KW 1", "Exact", 1, good_url)
     assert good_kw.text == "test kw 1"
     assert good_kw.match_type == "EXACT"
     assert good_kw.max_cpc == 1.0
     assert good_kw.micro_max_cpc == 1000000
-    assert isinstance(good_kw.final_url, KeywordFinalUrl)
+    assert isinstance(good_kw.final_url, FinalUrl)
 
     good_kw_no_conversion = Keyword("test KW 1", "Exact", 1, good_url)
     assert good_kw_no_conversion.max_cpc == 1.0
