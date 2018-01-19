@@ -45,6 +45,4 @@ The project was launched and is currently maintained by me, [Martin Winkel](http
  martin.winkel.pps@gmail.com.
 
 ## Contribute
-Contributors are very welcome! There's still a lot of good stuff to build :)
-
-If you wish to contribute file an issue, pull request or contact me please.
+Contributers are very welcome! :) Just file an issue, pull request or contact me.

@@ -105,5 +105,8 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# custom stuff
 try_stuff.py
 /googleads.yaml
+pip_distribution_instructions.md
