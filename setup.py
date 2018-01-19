@@ -24,16 +24,15 @@ def find_version(*file_paths):
 
 
 PACKAGES = [
-    "freedan",
-    "freedan.adwords_objects",
-    "freedan.adwords_services",
-    "freedan.other_services"
+    "py_adwords_reports",
+    "py_adwords_reports.adwords_objects",
+    "py_adwords_reports.adwords_services",
+    "py_adwords_reports.other_services"
 ]
 
 DEPENDENCIES = [
     "googleads",
-    "pandas",
-    "unidecode"
+    "pandas"
 ]
 
 CLASSIFIERS = [
@@ -42,10 +41,10 @@ CLASSIFIERS = [
 ]
 
 setuptools.setup(
-    name="freedan",
-    description="Convenient and fast API for Google AdWords utilizing pandas",
-    url="https://github.com/SaturnFromTitan/Freedan",
-    version=find_version("freedan", "__init__.py"),
+    name="py_adwords_reports",
+    description="Pythonic wrapper of the Google AdWords API. Especially designed for easy reporting.",
+    url="https://github.com/SaturnFromTitan/py_adwords_reports",
+    version=find_version("py_adwords_reports", "__init__.py"),
     packages=PACKAGES,
     license="Apache License 2.0",
     install_requires=DEPENDENCIES,

@@ -1,7 +1,6 @@
 # general usage
-googleads>=7.0.0
-pandas>=0.20.3
-Unidecode>=0.4.21
+googleads==9.0.0
+pandas==0.22.0
 
 # testing
-pytest>=3.2.1
+pytest==3.3.2

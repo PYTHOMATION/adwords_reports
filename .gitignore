@@ -106,5 +106,4 @@ ENV/
 # mypy
 .mypy_cache/
 try_stuff.py
-/adwords_credentials.yaml
-/examples/advanced/match_queries_and_keywords.py
+/googleads.yaml

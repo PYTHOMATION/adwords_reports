@@ -1,65 +1,40 @@
-# Freedan - The AdWords Automation Framework
-Freedan is a framework to quickly create cross-account automation with Google AdWords.
-Using it, one can easily automate big parts of manual day-to-day work, quickly test new ideas
-to improve performance or even build sophisticated software solutions such as a custom bidding
-algorithm.
+# PyAdWordsReports - The AdWords Reporting Framework
+PyAdWordsReports is a framework to quickly receive cross-account reports from Google AdWords.
 
-## How does it compare to other AdWords automation solutions from Google?
-Freedan provides an alternative to **UI Scripts**, **Power Editor** by building on top of the **native
-Python client library** for Google AdWords.
+Previously this framework was delivering additional functionality for account creation, bidding, ad testing
+and more. Sadly this overambitious goal resulted in overall sub-optimal design decisions, code quality and 
+a too little testing suite.
 
-Especially when accounts become large, the former solutions tend to get slow and painful to use.
-Compared to UI Scripts, you have the freedom to test and integrate the code to your existing code base.
-Also, you won't encounter any of the limitations such as limited runtime, limited scheduling options,
-operation limits etc. since you can host it on your own.
-
-Freedan provides a simpler user interface for the most frequently used parts of the AdWords API, while
-incorporating all best practises suggested by Google.
-
-## Use cases
-Common goals for Freedan scripts:
-* Validate/adapt namings of accounts, campaigns, adgroups, ... > improve data quality
-* Delete old/empty campaigns, adgroups, ... > improve speed when working with Power Editor
-* Adjust bids > improve cost efficiency of accounts
-* Update ads > improve customer experience + raise CTR
-* Create negative keywords > reallocate search queries to more suitable keywords and/or block bad traffic
-* Create new accounts / add more keywords > increase reach to target more customers
-
-Expected workflow of those scripts:
-1. Gather custom input (CLI, data warehouses, Google Drive, ...)
-1. Gather account information from AdWords
-1. Compute changes
-1. Upload updated parameters back to AdWords
+Therefore the new goal of this frameowrk is to be the best and easiest to use reporting library for Google
+AdWords. The additional functionality from previous versions might be added later in a separate framework. 
 
 ## Getting started
-1. For an introduction to AdWords refer to *AdWords_Introduction.md*.
 1. Install python 3.6.
     * Check out [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv)
     if you have an older version of python installed
-1. You can install Freedan using pip.
+1. You can install PyAdWordsReports using pip.
 
-    `$ pip install freedan`
+    `$ pip install py_adwords_reports`
 1. Get access to AdWords API and cache all credential information in a .yaml file.
     * [Google's tutorial for authenticating with their API](https://www.youtube.com/watch?v=yaDlZMfYWkg&list=PLOU2XLYxmsII2PCvm73bwxRCu2g_dyp67&index=2) 
     * [Google's client library for python](https://github.com/googleads/googleads-python-lib)
     * You'll need to pass the path to this file to the AdWordsService object for authentication.
     
     ```
-    from freedan import AdWordsService
+    from py_adwords_reports import AdWordsClient
     
     credentials_path = "adwords_credentials.yaml"
-    adwords_service = AdWordsService(credentials_path)
+    client = AdWordsClient(credentials_path)
     ```
 1. Try to run the code in *examples/basic/account_hierarchy.py* to see if everything is working.
 
 ## Technology
-* Everything is built with Python. I'm using python 3.6. and didn't check for compatibility with other Python versions
+* Everything is built with Python. I'm using python 3.6. and didn't check for compatibility with earlier Python versions
     * According Raymond Hettinger's [great talk about dictionaries in python 3.6.](https://www.youtube.com/watch?v=p33CVV29OG8)
     you should consider updating anyway ;)
-* All scripts heavily rely on [pandas](https://github.com/pandas-dev/pandas): The flexible, 
+* All reports are returned as DataFrames - see [pandas](https://github.com/pandas-dev/pandas): The flexible, 
 easy and powerful data analysis library for python
-* Tests are intended to work with [pytest](https://github.com/pytest-dev/pytest): A very easy,
-yet powerful framework for testing
+* Tests are intended to work with [pytest](https://github.com/pytest-dev/pytest).
 
 ## Examples
 Please have a look at the example folder. Those scripts demonstrate the power and beauty of the
@@ -69,18 +44,8 @@ you a lot of time. Let me know if you find them useful!
 ## Who do I talk to?
 The project was launched and is currently maintained by me, [Martin Winkel](https://www.linkedin.com/in/martin-winkel-90678977):
  martin.winkel.pps@gmail.com.
- 
-I recently relocated to Vancouver, BC, Canada.
-
-## Bugs
-If you've found a bug, please let me know. File an issue or send me an email.
 
 ## Contribute
 Contributors are very welcome! There's still a lot of good stuff to build :)
 
-If you find any important functionality missing, please let me know or create a
-pull request.
-
-## Future
-The next big step will be the addition of placeholder methods to Account, Campaign, AdGroup and ETA.
-You'll then be able to plug and play your unique business logic encoded in the names of those objects.
+If you wish to contribute file an issue, pull request or contact me please.
