@@ -16,18 +16,14 @@ def read(*names, **kwargs):
 
 def find_version(*file_paths):
     version_file = read(*file_paths)
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
-                              version_file, re.M)
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M)
     if version_match:
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
 
 
 PACKAGES = [
-    "py_adwords_reports",
-    "py_adwords_reports.adwords_objects",
-    "py_adwords_reports.adwords_services",
-    "py_adwords_reports.other_services"
+    "py_adwords_reports"
 ]
 
 DEPENDENCIES = [
@@ -42,7 +38,7 @@ CLASSIFIERS = [
 
 setuptools.setup(
     name="py_adwords_reports",
-    description="Pythonic wrapper of the Google AdWords API. Especially designed for easy reporting.",
+    description="Pythonic wrapper of the Google AdWords API for easy reporting.",
     url="https://github.com/SaturnFromTitan/py_adwords_reports",
     version=find_version("py_adwords_reports", "__init__.py"),
     packages=PACKAGES,
