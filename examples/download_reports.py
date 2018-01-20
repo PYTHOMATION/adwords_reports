@@ -1,4 +1,4 @@
-from py_adwords_reports import AdWordsClient, ReportDefinition
+from adwords_reports import AdWordsClient, ReportDefinition
 
 
 def download_reports(credentials, report_definition):

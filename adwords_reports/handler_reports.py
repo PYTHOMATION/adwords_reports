@@ -2,7 +2,7 @@ import io
 import datetime
 import pandas as pd
 
-from py_adwords_reports.error_retryer import ErrorRetryer
+from adwords_reports.error_retryer import ErrorRetryer
 
 
 @ErrorRetryer()

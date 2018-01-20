@@ -1,4 +1,4 @@
-from py_adwords_reports import AdWordsClient
+from adwords_reports import AdWordsClient
 
 
 def account_hierarchy(credentials):

@@ -4,7 +4,7 @@ from tests import init_native_adwords_account_label, init_native_adwords_account
 
 
 def test_account_label():
-    from py_adwords_reports.handler_accounts import AccountLabel
+    from adwords_reports.handler_accounts import AccountLabel
 
     adwords_label = init_native_adwords_account_label("test_acc_label", 90)
     acc_label = AccountLabel.from_ad_account_label(adwords_label)
@@ -13,7 +13,7 @@ def test_account_label():
 
 
 def test_account():
-    from py_adwords_reports.handler_accounts import Account, AccountLabel
+    from adwords_reports.handler_accounts import Account, AccountLabel
 
     # test initiation from native adwords account
     adwords_account = init_native_adwords_account()
@@ -31,7 +31,7 @@ def test_account():
 
 
 def test_micro_conversions():
-    import py_adwords_reports.micro_amounts as micro_amounts
+    import adwords_reports.micro_amounts as micro_amounts
 
     assert micro_amounts.micro_to_reg(23000000) == 23.0
     assert micro_amounts.micro_to_reg(1111111) == 1.11
@@ -60,7 +60,7 @@ def test_init_report_downloader():
 
 def test_get_page():
     from tests import test_client
-    from py_adwords_reports.handler_accounts import ACCOUNT_SELECTOR
+    from adwords_reports.handler_accounts import ACCOUNT_SELECTOR
 
     result = test_client._get_page(ACCOUNT_SELECTOR, "ManagedCustomerService")
     # hack but I couldn't import the class. please fix if you can
@@ -68,7 +68,7 @@ def test_get_page():
 
 
 def test_account_iterator():
-    from py_adwords_reports.handler_accounts import Account
+    from adwords_reports.handler_accounts import Account
     from tests import test_client
 
     for account in test_client.accounts():
@@ -77,7 +77,7 @@ def test_account_iterator():
 
 
 def test_report_definition():
-    from py_adwords_reports.handler_reports import ReportDefinition
+    from adwords_reports.handler_reports import ReportDefinition
     import datetime
 
     today = datetime.date.today()
@@ -135,7 +135,7 @@ def test_report_definition():
 def test_download_report():
     import pandas as pd
     from tests import test_client
-    from py_adwords_reports.handler_reports import ReportDefinition
+    from adwords_reports.handler_reports import ReportDefinition
 
     # impression keywords (empty df since test account can't be served)
     r_def = ReportDefinition(

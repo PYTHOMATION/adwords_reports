@@ -1,5 +1,5 @@
 import os
-from py_adwords_reports.client import AdWordsClient
+from adwords_reports.client import AdWordsClient
 
 test_dir = os.path.dirname(__file__)
 adwords_test_credentials = os.path.join(test_dir, "test_googleads.yaml")

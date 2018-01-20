@@ -1,10 +1,10 @@
 from googleads import adwords
 
-from py_adwords_reports import base_dir
-from py_adwords_reports.error_retryer import ErrorRetryer
+from adwords_reports import base_dir
+from adwords_reports.error_retryer import ErrorRetryer
 
-import py_adwords_reports.handler_reports as handler_reports
-import py_adwords_reports.handler_accounts as handler_accounts
+import adwords_reports.handler_reports as handler_reports
+import adwords_reports.handler_accounts as handler_accounts
 
 
 DEFAULT_CREDENTIALS_PATH = base_dir+"/googleads.yaml"

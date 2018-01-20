@@ -23,7 +23,7 @@ def find_version(*file_paths):
 
 
 PACKAGES = [
-    "py_adwords_reports"
+    "adwords_reports"
 ]
 
 DEPENDENCIES = [
@@ -35,16 +35,27 @@ CLASSIFIERS = [
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3.6"
 ]
+KEYWORDS = [
+    "data",
+    "analytics",
+    "api",
+    "wrapper",
+    "google",
+    "adwords",
+    "reports",
+    "reporting"
+]
 
 setuptools.setup(
-    name="py_adwords_reports",
+    name="adwords_reports",
     description="Pythonic wrapper of the Google AdWords API for easy reporting.",
-    url="https://github.com/SaturnFromTitan/py_adwords_reports",
-    version=find_version("py_adwords_reports", "__init__.py"),
+    keywords=" ".join(KEYWORDS),
+    author="Martin Winkel",
+    author_email="martin.winkel.pps@gmail.com",
+    url="https://github.com/SaturnFromTitan/adwords_reports",
+    version=find_version("adwords_reports", "__init__.py"),
     packages=PACKAGES,
-    license="Apache License 2.0",
     install_requires=DEPENDENCIES,
     classifiers=CLASSIFIERS,
-    author="Martin Winkel",
-    author_email="martin.winkel.pps@gmail.com"
+    license="Apache License 2.0"
 )
