@@ -1,5 +1,5 @@
-# PyAdWordsReports - The AdWords Reporting Framework
-PyAdWordsReports is a framework to quickly receive cross-account reports from Google AdWords.
+# AdWordsReports - The AdWords Reporting Framework
+AdWordsReports is a framework to quickly receive cross-account reports from Google AdWords.
 
 Previously this framework was delivering additional functionality for account creation, bidding, ad testing
 and more. Sadly this overambitious goal resulted in sub-optimal design decisions, code quality issues and 
@@ -13,7 +13,7 @@ library.
 1. Install python 3.6.
     * Check out [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv)
     if you have an older version of python installed
-1. You can install PyAdWordsReports using pip.
+1. You can install AdWordsReports using pip.
 
     `$ pip install py_adwords_reports`
 1. Get access to AdWords API and cache all credential information in a .yaml file.
