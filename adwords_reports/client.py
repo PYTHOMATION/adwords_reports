@@ -2,14 +2,11 @@ from googleads import adwords
 
 from adwords_reports import base_dir
 from adwords_reports.error_retryer import ErrorRetryer
-
-import adwords_reports.handler_reports as handler_reports
-import adwords_reports.handler_accounts as handler_accounts
+from adwords_reports.account import Account, to_account_id
 
 
 DEFAULT_CREDENTIALS_PATH = base_dir+"/googleads.yaml"
 DEFAULT_API_VERSION = "v201710"
-MICRO_FACTOR = 10**6
 
 
 class AdWordsClient:
@@ -20,41 +17,30 @@ class AdWordsClient:
         - Download reports
     """
     def __init__(self, credentials_path=DEFAULT_CREDENTIALS_PATH, api_version=DEFAULT_API_VERSION):
-        self._client = self._init_api_connection(credentials_path)
+        # caution, don't change the order of these attributes
+        self._client = self._authenticate(credentials_path)
         self.top_level_account_id = self._client.client_customer_id
         self.api_version = api_version
 
-    def download_report(self, report_definition, zero_impressions):
-        """
-        :param report_definition: ReportDefinition or nested dict
-        :param zero_impressions: bool
-        :return: DataFrame
-        """
-        downloader = self._init_report_downloader()
-        report = handler_reports.download_report(
-            downloader=downloader,
-            report_definition=report_definition,
-            zero_impressions=zero_impressions)
-        return report
+        self.downloader = self._init_report_downloader()
 
     def accounts(self):
         """
         :return: generator with Account objects sorted by name
         """
-        account_selector = handler_accounts.ACCOUNT_SELECTOR
-        ad_accounts = self._get_entries(account_selector, service="ManagedCustomerService")
+        ad_accounts = self._get_entries(Account.SELECTOR, service="ManagedCustomerService")
 
         for ad_account in ad_accounts:
-            account = handler_accounts.Account.from_ad_account(ad_account=ad_account)
+            account = Account.from_ad_account(client=self, ad_account=ad_account)
             self.select(account)
             yield account
         self.reset_selection()
 
-    def select(self, account_or_id):
+    def select(self, obj):
         """ starts a new session with the scope of this account.
-        :param account_or_id: int/float or Account
+        :param obj: str, int or Account
         """
-        account_id = handler_accounts.to_account_id(account_or_id)
+        account_id = to_account_id(obj)
         self._client.SetClientCustomerId(account_id)
 
     def reset_selection(self):
@@ -91,5 +77,5 @@ class AdWordsClient:
         return self._client.GetReportDownloader(version=self.api_version)
 
     @ErrorRetryer()
-    def _init_api_connection(self, credentials_path):
+    def _authenticate(self, credentials_path):
         return adwords.AdWordsClient.LoadFromStorage(credentials_path)

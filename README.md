@@ -15,14 +15,14 @@ library.
     if you have an older version of python installed
 1. You can install AdWordsReports using pip.
 
-    `$ pip install py_adwords_reports`
+    `$ pip install adwords_reports`
 1. Get access to AdWords API and cache all credential information in a .yaml file.
     * [Google's tutorial for authenticating with their API](https://www.youtube.com/watch?v=yaDlZMfYWkg&list=PLOU2XLYxmsII2PCvm73bwxRCu2g_dyp67&index=2) 
     * [Google's client library for python](https://github.com/googleads/googleads-python-lib)
     * You'll need to pass the path to this file to the AdWordsService object for authentication.
     
     ```
-    from py_adwords_reports import AdWordsClient
+    from adwords_reports import AdWordsClient
     
     credentials_path = "adwords_credentials.yaml"
     client = AdWordsClient(credentials_path)

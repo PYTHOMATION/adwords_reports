@@ -4,7 +4,7 @@ from tests import init_native_adwords_account_label, init_native_adwords_account
 
 
 def test_account_label():
-    from adwords_reports.handler_accounts import AccountLabel
+    from adwords_reports.account import AccountLabel
 
     adwords_label = init_native_adwords_account_label("test_acc_label", 90)
     acc_label = AccountLabel.from_ad_account_label(adwords_label)
@@ -13,7 +13,7 @@ def test_account_label():
 
 
 def test_account():
-    from adwords_reports.handler_accounts import Account, AccountLabel
+    from adwords_reports.account import Account, AccountLabel
 
     # test initiation from native adwords account
     adwords_account = init_native_adwords_account()
@@ -60,7 +60,7 @@ def test_init_report_downloader():
 
 def test_get_page():
     from tests import test_client
-    from adwords_reports.handler_accounts import ACCOUNT_SELECTOR
+    from adwords_reports.account import ACCOUNT_SELECTOR
 
     result = test_client._get_page(ACCOUNT_SELECTOR, "ManagedCustomerService")
     # hack but I couldn't import the class. please fix if you can
@@ -68,7 +68,7 @@ def test_get_page():
 
 
 def test_account_iterator():
-    from adwords_reports.handler_accounts import Account
+    from adwords_reports.account import Account
     from tests import test_client
 
     for account in test_client.accounts():
@@ -77,7 +77,7 @@ def test_account_iterator():
 
 
 def test_report_definition():
-    from adwords_reports.handler_reports import ReportDefinition
+    from adwords_reports.report_definition import ReportDefinition
     import datetime
 
     today = datetime.date.today()
@@ -105,11 +105,11 @@ def test_report_definition():
             "predicates": predicates
         }
     }
-    assert r_def.as_dict() == expected_result
+    assert r_def._as_dict() == expected_result
 
     # conversion of date strings
     r_def2 = ReportDefinition(
-        report_type=r_type, fields=fields, date_min=seven_d_ago, date_max=yesterday)
+        report_type=r_type, fields=fields, date_from=seven_d_ago, date_to=yesterday)
     expected_result2 = {
         "reportName": "api_report",
         "dateRangeType": "CUSTOM_DATE",
@@ -123,28 +123,28 @@ def test_report_definition():
             }
         }
     }
-    assert r_def2.as_dict() == expected_result2
+    assert r_def2._as_dict() == expected_result2
 
     # multiple specifications for date range
     with pytest.raises(AssertionError):
         ReportDefinition(
             report_type=r_type, fields=fields, predicates=predicates,
-            last_days=3, date_min=seven_d_ago, date_max=yesterday)
+            last_days=3, date_from=seven_d_ago, date_to=yesterday)
 
 
 def test_download_report():
     import pandas as pd
     from tests import test_client
-    from adwords_reports.handler_reports import ReportDefinition
+    from adwords_reports.report_definition import ReportDefinition
 
     # impression keywords (empty df since test account can't be served)
     r_def = ReportDefinition(
         report_type="KEYWORDS_PERFORMANCE_REPORT", fields=["Criteria"], last_days=7)
-    report = test_client.download_report(r_def, zero_impressions=False)
+    report = test_client._download_report(r_def, zero_impressions=False)
     imp_result = pd.DataFrame(columns=["Criteria"])
     assert report.equals(imp_result)
 
     # zero impressions
-    report = test_client.download_report(r_def, zero_impressions=True)
+    report = test_client._download_report(r_def, zero_impressions=True)
     zero_imp_result = pd.DataFrame([["test_kw_1"]], columns=["Criteria"])
     assert report.equals(zero_imp_result)

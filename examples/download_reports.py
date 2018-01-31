@@ -16,7 +16,7 @@ def download_reports(credentials, report_definition):
     for account in adwords_service.accounts():
         print(account)
 
-        report = adwords_service.download_report(report_definition, zero_impressions=True)
+        report = account.download(report_definition, zero_impressions=True)
         print(report)  # pandas DataFrame
 
         # you may now
