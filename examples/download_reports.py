@@ -1,4 +1,4 @@
-from adwords_reports import AdWordsClient, ReportDefinition
+from adwords_reports import Client, ReportDefinition
 
 
 def download_reports(credentials, report_definition):
@@ -8,7 +8,7 @@ def download_reports(credentials, report_definition):
     :param report_definition: ReportDefinition
     """
     # init connection to adwords API
-    adwords_service = AdWordsClient(credentials)
+    adwords_service = Client(credentials)
 
     # before the method is returning an account it 'selects' it,
     # i.e. it creates a new session with the scope of this account.

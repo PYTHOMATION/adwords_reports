@@ -1,9 +1,9 @@
 import os
-from adwords_reports.client import AdWordsClient
+from adwords_reports.client import Client
 
 test_dir = os.path.dirname(__file__)
 adwords_test_credentials = os.path.join(test_dir, "test_googleads.yaml")
-test_client = AdWordsClient(adwords_test_credentials)
+test_client = Client(adwords_test_credentials)
 
 adgroup1_name = "Ad Group #1"
 adgroup1_id = 47391167467

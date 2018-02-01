@@ -1,4 +1,4 @@
-from adwords_reports import AdWordsClient
+from adwords_reports import Client
 
 
 def account_hierarchy(credentials):
@@ -7,7 +7,7 @@ def account_hierarchy(credentials):
     :param credentials: str, path to your adwords credentials file
     """
     # init connection to adwords API
-    client = AdWordsClient(credentials)
+    client = Client(credentials)
 
     # before the method is returning an account it 'selects' it,
     # i.e. it creates a new session with the scope of this account.

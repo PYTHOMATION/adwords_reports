@@ -9,7 +9,7 @@ DEFAULT_CREDENTIALS_PATH = base_dir+"/googleads.yaml"
 DEFAULT_API_VERSION = "v201710"
 
 
-class AdWordsClient:
+class Client:
     """ AdWords service class that handles interactions with AdWords API and provides a top-level interface for this api.
     Most important functionality:
         - Initiate API connection using credentials
