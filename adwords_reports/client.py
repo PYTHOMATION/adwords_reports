@@ -30,7 +30,7 @@ class Client:
 
         for ad_account in ad_accounts:
             account = Account.from_ad_account(client=self, ad_account=ad_account)
-            self.select(account)
+            self.select(account_id=account.id)
             yield account
         self.reset_selection()
 

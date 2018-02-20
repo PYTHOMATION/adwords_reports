@@ -1,4 +1,4 @@
-from tests import fix_account_label, fix_adwords_account_label  # is used
+from tests import fix_client, fix_account_label, fix_adwords_account_service, fix_adwords_account_label  # is used
 
 
 def test_init(fix_account_label):

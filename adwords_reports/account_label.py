@@ -1,7 +1,7 @@
 class AccountLabel:
     def __init__(self, name, label_id):
-        self.id = label_id
         self.name = name
+        self.id = label_id
 
     @classmethod
     def from_ad_account_label(cls, adwords_acc_label):

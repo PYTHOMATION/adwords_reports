@@ -39,17 +39,17 @@ def test_get_page(fix_client):
 
 
 def test_select(fix_client):
-    assert fix_client.client_customer_id == "519-085-5164"
+    assert fix_client._client.client_customer_id == "519-085-5164"
     fix_client.select("873-154-8394")
-    assert fix_client.client_customer_id == "873-154-8394"
+    assert fix_client._client.client_customer_id == "873-154-8394"
 
 
 def test_reset_selection(fix_client):
-    assert fix_client.client_customer_id == "519-085-5164"
+    assert fix_client._client.client_customer_id == "519-085-5164"
     fix_client.select("873-154-8394")
-    assert fix_client.client_customer_id == "873-154-8394"
+    assert fix_client._client.client_customer_id == "873-154-8394"
     fix_client.reset_selection()
-    assert fix_client.client_customer_id == "519-085-5164"
+    assert fix_client._client.client_customer_id == "519-085-5164"
 
 
 def test_account_iterator(fix_client):
