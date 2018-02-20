@@ -1,7 +1,7 @@
+from retrying import retry
 from googleads import adwords
 
 from adwords_reports import base_dir
-from adwords_reports.error_retryer import ErrorRetryer
 from adwords_reports.account import Account, to_account_id
 
 
@@ -58,7 +58,7 @@ class Client:
             raise LookupError("Nothing matches the selector.")
         return page["entries"]
 
-    @ErrorRetryer()
+    @retry(stop_max_attempt_number=3, wait_random_min=5000, wait_random_max=10000)
     def _get_page(self, selector, service):
         """
         :param selector: nested dict that describes what is requested
@@ -68,14 +68,14 @@ class Client:
         service_object = self._init_service(service)
         return service_object.get(selector)
 
-    @ErrorRetryer()
+    @retry(stop_max_attempt_number=3, wait_random_min=5000, wait_random_max=10000)
     def _init_service(self, service_name):
         return self._client.GetService(service_name, version=self.api_version)
 
-    @ErrorRetryer()
+    @retry(stop_max_attempt_number=3, wait_random_min=5000, wait_random_max=10000)
     def _init_report_downloader(self):
         return self._client.GetReportDownloader(version=self.api_version)
 
-    @ErrorRetryer()
+    @retry(stop_max_attempt_number=3, wait_random_min=5000, wait_random_max=10000)
     def _authenticate(self, credentials_path):
         return adwords.AdWordsClient.LoadFromStorage(credentials_path)

@@ -1,7 +1,6 @@
+from retrying import retry
 import io
 import pandas as pd
-
-from adwords_reports.error_retryer import ErrorRetryer
 
 
 def to_account_id(obj):
@@ -55,7 +54,7 @@ class Account:
         data = io.StringIO(response)
         return pd.read_csv(data, names=header)
 
-    @ErrorRetryer()
+    @retry(stop_max_attempt_number=3, wait_random_min=5000, wait_random_max=10000)
     def _download(self, json_report_definition, zero_impressions):
         downloader = self.client.downloader
         response = downloader.DownloadReportAsString(

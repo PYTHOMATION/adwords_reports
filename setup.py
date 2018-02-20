@@ -28,7 +28,8 @@ PACKAGES = [
 
 DEPENDENCIES = [
     "googleads",
-    "pandas"
+    "pandas",
+    "retrying"
 ]
 
 CLASSIFIERS = [
