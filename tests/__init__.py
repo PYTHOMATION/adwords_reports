@@ -17,16 +17,22 @@ def fix_client():
 
 
 @pytest.fixture()
+def fix_account_label():
+    from adwords_reports.account_label import AccountLabel
+    return AccountLabel(name="unused", label_id=123)
+
+
+@pytest.fixture()
 def fix_account_service(fix_client):
     service = fix_client._init_service("ManagedCustomerService")
     return service.suds_client
 
 
 @pytest.fixture()
-def fix_adwords_account_label(fix_account_service, name, label_id):
+def fix_adwords_account_label(fix_account_service):
     label = fix_account_service.factory.create("AccountLabel")
-    label.name = name
-    label.id = label_id
+    label.name = "unused"
+    label.id = 123
     return label
 
 
