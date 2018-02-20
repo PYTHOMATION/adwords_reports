@@ -1,4 +1,8 @@
-# AdWordsReports - The AdWords Reporting Framework
+# AdWords Reports
+[![Build Status](https://travis-ci.org/SaturnFromTitan/adwords_reports.svg?branch=master)](https://travis-ci.org/SaturnFromTitan/adwords_reports)
+[![codecov](https://codecov.io/gh/SaturnFromTitan/adwords_reports/branch/master/graph/badge.svg)](https://codecov.io/gh/SaturnFromTitan/adwords_reports)
+
+## Description
 AdWordsReports is a framework to quickly receive cross-account reports from Google AdWords.
 
 Previously this framework was delivering additional functionality for account creation, bidding, ad testing
