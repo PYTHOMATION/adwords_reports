@@ -60,3 +60,7 @@ def test_download_report_zero_impressions(fix_account, fix_report_definition):
     report = fix_account.download(fix_report_definition, zero_impressions=True)
     expected_result = pd.DataFrame([["test_kw_1"]], columns=["Criteria"])
     assert report.equals(expected_result)
+
+
+def test_repr(fix_account):
+    assert str(fix_account) == "\nAccountName: Dont touch - !ImportantForTests! (ID: 5190855164)"

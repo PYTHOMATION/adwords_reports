@@ -1,4 +1,5 @@
 import os
+import pytest
 
 from adwords_reports.client import Client
 
@@ -30,12 +31,26 @@ def test_init_report_downloader(fix_client):
     assert isinstance(report_downloader, googleads.adwords.ReportDownloader)
 
 
-def test_get_page(fix_client):
-    from adwords_reports.account import Account
+def test_get_entries_results(fix_client):
+    selector = {
+        "fields": ["Name", "CustomerId", "CurrencyCode", "DateTimeZone"]
+    }
+    result = fix_client._get_entries(selector, "ManagedCustomerService")
+    assert result
+    assert isinstance(result, list)
 
-    result = fix_client._get_page(Account.SELECTOR, "ManagedCustomerService")
-    # hack but I couldn't import the class. please fix if you can
-    assert str(type(result)) == "<class 'suds.sudsobject.ManagedCustomerPage'>"
+
+def test_get_entries_no_results(fix_client):
+    selector = {
+        "fields": ["Name", "CustomerId", "CurrencyCode", "DateTimeZone"],
+        "predicates": [{
+            "field": "Name",
+            "operator": "EQUALS",
+            "values": "i_do_not_exist"
+        }]
+    }
+    with pytest.raises(LookupError):
+        fix_client._get_entries(selector, "ManagedCustomerService")
 
 
 def test_select(fix_client):
