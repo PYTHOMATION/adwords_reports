@@ -1,12 +1,29 @@
 import pytest
 
-from tests import init_native_adwords_account_label, init_native_adwords_account
+from tests import fix_adwords_account_label, fix_native_adwords_account
+
+
+def test_account_selector():
+    from adwords_reports.account import Account
+
+    assert Account.SELECTOR == {
+        "fields": ["Name", "CustomerId", "CurrencyCode", "DateTimeZone"],
+        "predicates": [{
+            "field": "CanManageClients",
+            "operator": "EQUALS",
+            "values": "FALSE"
+        }],
+        "ordering": [{
+            "field": "Name",
+            "sortOrder": "ASCENDING"
+        }]
+    }
 
 
 def test_account_label():
     from adwords_reports.account import AccountLabel
 
-    adwords_label = init_native_adwords_account_label("test_acc_label", 90)
+    adwords_label = fix_adwords_account_label("test_acc_label", 90)
     acc_label = AccountLabel.from_ad_account_label(adwords_label)
     assert acc_label.name == "test_acc_label"
     assert acc_label.id == 90
@@ -16,7 +33,7 @@ def test_account():
     from adwords_reports.account import Account, AccountLabel
 
     # test initiation from native adwords account
-    adwords_account = init_native_adwords_account()
+    adwords_account = fix_native_adwords_account()
     account = Account.from_ad_account(ad_account=adwords_account)
     assert account.name == "Test1"
     assert account.id == "302-203-1203"

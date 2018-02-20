@@ -1,32 +1,60 @@
-def test_init_service():
-    import googleads
-    from tests import test_client
+import os
 
-    account_service = test_client._init_service("ManagedCustomerService")
+from adwords_reports.client import Client
+
+from tests import test_dir
+from tests import fix_client  # is used
+
+
+def test_default_api_version():
+    from adwords_reports.client import DEFAULT_API_VERSION
+    assert DEFAULT_API_VERSION == "v201710"
+
+
+def test_init():
+    test_credentials = os.path.join(test_dir, "test_googleads.yaml")
+    assert Client(test_credentials)
+
+
+def test_init_service(fix_client):
+    import googleads
+
+    account_service = fix_client._init_service("ManagedCustomerService")
     assert isinstance(account_service, googleads.common.SudsServiceProxy)
 
 
-def test_init_report_downloader():
+def test_init_report_downloader(fix_client):
     import googleads
-    from tests import test_client
 
-    report_downloader = test_client._init_report_downloader()
+    report_downloader = fix_client._init_report_downloader()
     assert isinstance(report_downloader, googleads.adwords.ReportDownloader)
 
 
-def test_get_page():
-    from tests import test_client
-    from adwords_reports.account import ACCOUNT_SELECTOR
+def test_get_page(fix_client):
+    from adwords_reports.account import Account
 
-    result = test_client._get_page(ACCOUNT_SELECTOR, "ManagedCustomerService")
+    result = fix_client._get_page(Account.SELECTOR, "ManagedCustomerService")
     # hack but I couldn't import the class. please fix if you can
     assert str(type(result)) == "<class 'suds.sudsobject.ManagedCustomerPage'>"
 
 
-def test_account_iterator():
-    from adwords_reports.account import Account
-    from tests import test_client
+def test_select(fix_client):
+    assert fix_client.client_customer_id == "519-085-5164"
+    fix_client.select("873-154-8394")
+    assert fix_client.client_customer_id == "873-154-8394"
 
-    for account in test_client.accounts():
+
+def test_reset_selection(fix_client):
+    assert fix_client.client_customer_id == "519-085-5164"
+    fix_client.select("873-154-8394")
+    assert fix_client.client_customer_id == "873-154-8394"
+    fix_client.reset_selection()
+    assert fix_client.client_customer_id == "519-085-5164"
+
+
+def test_account_iterator(fix_client):
+    from adwords_reports.account import Account
+
+    for account in fix_client.accounts():
         assert isinstance(account, Account)
         assert account.name == "Dont touch - !ImportantForTests!"

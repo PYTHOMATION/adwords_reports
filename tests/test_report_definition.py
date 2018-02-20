@@ -1,3 +1,6 @@
+import pytest
+
+
 def test_report_definition():
     from adwords_reports.report_definition import ReportDefinition
     import datetime

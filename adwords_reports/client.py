@@ -1,11 +1,9 @@
 from retrying import retry
 from googleads import adwords
 
-from adwords_reports import base_dir
-from adwords_reports.account import Account, to_account_id
+from adwords_reports.account import Account
 
 
-DEFAULT_CREDENTIALS_PATH = base_dir+"/googleads.yaml"
 DEFAULT_API_VERSION = "v201710"
 
 
@@ -16,7 +14,7 @@ class Client:
         - Generator for accounts matching the account selector in project _config
         - Download reports
     """
-    def __init__(self, credentials_path=DEFAULT_CREDENTIALS_PATH, api_version=DEFAULT_API_VERSION):
+    def __init__(self, credentials_path, api_version=DEFAULT_API_VERSION):
         # caution, don't change the order of these attributes
         self._client = self._authenticate(credentials_path)
         self.top_level_account_id = self._client.client_customer_id
@@ -36,11 +34,10 @@ class Client:
             yield account
         self.reset_selection()
 
-    def select(self, obj):
+    def select(self, account_id):
         """ starts a new session with the scope of this account.
-        :param obj: str, int or Account
+        :param account_id: str or int
         """
-        account_id = to_account_id(obj)
         self._client.SetClientCustomerId(account_id)
 
     def reset_selection(self):

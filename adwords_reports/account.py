@@ -1,15 +1,8 @@
-from retrying import retry
 import io
 import pandas as pd
+from retrying import retry
 
-
-def to_account_id(obj):
-    assert isinstance(obj, (Account, str, int, float))
-
-    if isinstance(obj, Account):
-        return obj.id
-    else:
-        return obj
+from adwords_reports.account_label import AccountLabel
 
 
 class Account:
@@ -67,20 +60,8 @@ class Account:
         if "accountLabels" in ad_account:
             return [AccountLabel.from_ad_account_label(ad_label)
                     for ad_label in ad_account["accountLabels"]]
-        return list()
+        else:
+            return list()
 
     def __repr__(self):
         return "\nAccountName: {name} (ID: {id})".format(name=self.name, id=self.id)
-
-
-class AccountLabel:
-    def __init__(self, name, label_id):
-        self.id = label_id
-        self.name = name
-
-    @classmethod
-    def from_ad_account_label(cls, adwords_acc_label):
-        return cls(name=adwords_acc_label.name, label_id=adwords_acc_label.id)
-
-    def __repr__(self):
-        return "{name} ({id})".format(name=self.name, id=self.id)
