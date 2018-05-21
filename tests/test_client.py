@@ -9,7 +9,7 @@ from tests import fix_client  # is used
 
 def test_default_api_version():
     from adwords_reports.client import DEFAULT_API_VERSION
-    assert DEFAULT_API_VERSION == "v201710"
+    assert DEFAULT_API_VERSION == "v201802"
 
 
 def test_init():
