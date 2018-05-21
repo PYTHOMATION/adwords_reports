@@ -96,10 +96,6 @@ ENV/
 # Rope project settings
 .ropeproject
 
-# custom stuff
-.idea
-.DS_Store
-
 # mkdocs documentation
 /site
 
@@ -107,6 +103,9 @@ ENV/
 .mypy_cache/
 
 # custom stuff
+.idea
+.DS_Store
+.pytest_cache
 try_stuff.py
 /googleads.yaml
 pip_distribution_instructions.md
