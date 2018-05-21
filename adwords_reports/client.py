@@ -4,7 +4,7 @@ from googleads import adwords
 from adwords_reports.account import Account
 
 
-DEFAULT_API_VERSION = "v201710"
+DEFAULT_API_VERSION = "v201802"
 
 
 class Client:
