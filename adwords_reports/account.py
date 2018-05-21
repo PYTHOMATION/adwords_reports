@@ -2,6 +2,7 @@ import io
 import pandas as pd
 from retrying import retry
 
+from adwords_reports import logger
 from adwords_reports.account_label import AccountLabel
 
 
@@ -49,6 +50,7 @@ class Account:
 
     @retry(stop_max_attempt_number=3, wait_random_min=5000, wait_random_max=10000)
     def _download(self, json_report_definition, zero_impressions):
+        logger.info("Downloading report.")
         downloader = self.client.downloader
         response = downloader.DownloadReportAsString(
             json_report_definition, skip_report_header=True, skip_column_header=True,

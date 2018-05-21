@@ -1,6 +1,7 @@
 from retrying import retry
 from googleads import adwords
 
+from adwords_reports import logger
 from adwords_reports.account import Account
 
 
@@ -26,6 +27,7 @@ class Client:
         """
         :return: generator with Account objects sorted by name
         """
+        logger.info("Getting accounts.")
         ad_accounts = self._get_entries(Account.SELECTOR, service="ManagedCustomerService")
 
         for ad_account in ad_accounts:
@@ -67,12 +69,15 @@ class Client:
 
     @retry(stop_max_attempt_number=3, wait_random_min=5000, wait_random_max=10000)
     def _init_service(self, service_name):
+        logger.info("Initiating {}".format(service_name))
         return self._client.GetService(service_name, version=self.api_version)
 
     @retry(stop_max_attempt_number=3, wait_random_min=5000, wait_random_max=10000)
     def _init_report_downloader(self):
+        logger.info("Initiating ReportDownloader.")
         return self._client.GetReportDownloader(version=self.api_version)
 
     @retry(stop_max_attempt_number=3, wait_random_min=5000, wait_random_max=10000)
     def _authenticate(self, credentials_path):
+        logger.info("Initiating Client.")
         return adwords.AdWordsClient.LoadFromStorage(credentials_path)
